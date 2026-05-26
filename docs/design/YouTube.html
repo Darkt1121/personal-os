@@ -1,0 +1,1486 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Personal OS — YouTube</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:        #0a0a0c;
+    --bg-2:      #0d0d11;
+    --ink:       #e8e6e1;
+    --ink-warm:  #efe8df;     /* warmer ink for editor body */
+    --ink-dim:   #8a8a8f;
+    --ink-faint: #4a4a50;
+    --line:      #2a2a30;
+    --line-2:    #3a3a42;
+
+    /* YouTube module identity — soft coral red */
+    --yt:        #d96b5c;
+    --yt-2:      #e88a7d;
+    --yt-soft:   rgba(217,107,92,.10);
+    --yt-line:   rgba(217,107,92,.35);
+    --yt-glow:   rgba(217,107,92,.45);
+
+    /* shared from system */
+    --fin:       #5cb89e;
+    --est:       #6aa7d4;
+    --warn:      #c79a5c;
+    --cool:      #6fb7c9;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(217,107,92,.06), transparent 60%),
+    radial-gradient(1000px 500px at 100% 110%, rgba(217,107,92,.04), transparent 60%),
+    var(--bg);
+  }
+
+  /* ---------- App layout ---------- */
+  .app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+  .sidebar{
+    border-right:1px dashed var(--line);padding:18px 14px;background:#0a0a0d;
+    display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 6px 14px;border-bottom:1px dashed var(--line)}
+  .brand .logo{
+    width:32px;height:32px;border-radius:8px;background:#0e0e12;border:1.5px solid var(--yt);
+    box-shadow:0 0 18px -6px var(--yt-glow), inset 0 0 0 1px rgba(217,107,92,.08);
+    display:grid;place-items:center;color:var(--yt);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px
+  }
+  .brand .name{font-family:"Caveat",cursive;font-size:23px;line-height:1}
+  .brand .name small{display:block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;color:var(--ink-faint);margin-top:2px;text-transform:uppercase}
+
+  .nav-group{margin-top:10px}
+  .nav-group .label{padding:0 6px 6px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-dim);
+    font-family:"Caveat",cursive;font-size:19px;border:1px solid transparent;cursor:default;position:relative
+  }
+  .nav-item .ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+  .nav-item.active{background:rgba(217,107,92,.06);border-color:var(--yt-line);color:var(--ink)}
+  .nav-item.active .ico{color:var(--yt);opacity:1}
+  .nav-item.active::before{
+    content:"";position:absolute;width:3px;height:18px;background:var(--yt);border-radius:2px;
+    margin-left:-13px;box-shadow:0 0 10px var(--yt-glow)
+  }
+
+  .sidebar .foot{margin-top:auto;border-top:1px dashed var(--line);padding-top:10px;display:flex;align-items:center;gap:10px}
+  .avatar{width:28px;height:28px;border-radius:50%;border:1.5px dashed var(--line-2);background:#15151a}
+
+  .main{padding:22px 32px 80px;display:flex;flex-direction:column;gap:18px;min-width:0;max-width:1400px;width:100%}
+
+  /* Top bar */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 16px;border:1px dashed var(--line);border-radius:12px;background:#0a0a0d
+  }
+  .topbar .left,.topbar .right{display:flex;align-items:center;gap:14px}
+  .crumbs{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-dim)}
+  .crumbs .sep{color:var(--ink-faint);margin:0 6px}
+  .crumbs b{color:var(--ink)}
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;
+    padding:4px 9px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;color:var(--ink-dim);text-transform:uppercase
+  }
+  .pill .d{width:6px;height:6px;border-radius:50%;background:var(--yt);box-shadow:0 0 8px var(--yt)}
+  .search{
+    border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--ink-faint);
+    font-family:"JetBrains Mono",monospace;font-size:11px;background:#0c0c10;min-width:280px;display:flex;align-items:center;gap:8px
+  }
+  .search .k{margin-left:auto;border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;font-size:9px}
+  .iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-dim);font-size:12px}
+
+  /* Surfaces */
+  .sk{
+    position:relative;border:1.4px solid #252530;border-radius:14px;
+    background:
+      radial-gradient(120% 100% at 0% 0%, rgba(255,255,255,.025), transparent 50%),
+      linear-gradient(180deg, #0e0e12 0%, #0a0a0d 100%);
+    padding:18px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.015),
+      0 30px 60px -40px rgba(0,0,0,.8),
+      inset 0 1px 0 rgba(255,255,255,.025);
+  }
+  .sk.yt{
+    box-shadow:
+      0 0 0 1px rgba(217,107,92,.06),
+      0 0 60px -28px var(--yt-glow),
+      0 30px 60px -40px rgba(0,0,0,.85),
+      inset 0 1px 0 rgba(255,255,255,.03);
+    border-color:rgba(217,107,92,.18);
+  }
+
+  .label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+  .mono{font-family:"JetBrains Mono",monospace;color:var(--ink-dim)}
+
+  .ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+  .icobox{
+    width:34px;height:34px;border-radius:9px;border:1.4px solid var(--line-2);
+    display:grid;place-items:center;background:#0d0d11;color:var(--ink-dim);flex:none
+  }
+  .icobox.sm{width:26px;height:26px;border-radius:7px}
+  .icobox.yt{
+    color:var(--yt);border-color:var(--yt-line);background:var(--yt-soft);
+    box-shadow:0 0 18px -10px var(--yt-glow), inset 0 0 0 1px rgba(217,107,92,.08)
+  }
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.06em;cursor:default;
+    border:1px solid var(--line-2);background:#0c0c10;color:var(--ink);transition:all .15s
+  }
+  .btn.primary{
+    border-color:var(--yt-line);background:linear-gradient(180deg, rgba(217,107,92,.18), rgba(217,107,92,.06));
+    color:var(--yt);box-shadow:0 0 22px -10px var(--yt-glow), inset 0 1px 0 rgba(255,255,255,.04)
+  }
+  .btn.ghost{background:transparent}
+  .btn .ico{width:13px;height:13px}
+
+  /* ============ Hero ============ */
+  .hero-banner{
+    position:relative;overflow:hidden;
+    border-radius:18px;
+    border:1px solid rgba(217,107,92,.16);
+    background:
+      radial-gradient(70% 110% at 16% 50%, rgba(217,107,92,.22), transparent 55%),
+      radial-gradient(40% 80% at 90% 0%,   rgba(217,107,92,.07), transparent 60%),
+      radial-gradient(40% 100% at 50% 130%,rgba(217,107,92,.05), transparent 60%),
+      linear-gradient(180deg, #0c0c11 0%, #08080a 100%);
+    box-shadow:
+      0 0 0 1px rgba(217,107,92,.05),
+      0 0 100px -40px var(--yt-glow),
+      0 50px 100px -50px rgba(0,0,0,.9),
+      inset 0 1px 0 rgba(255,255,255,.035);
+    padding:42px 46px;
+    display:grid;grid-template-columns:180px 1fr auto;gap:34px;align-items:center;
+    min-height:240px;
+  }
+  .hero-banner::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      repeating-linear-gradient(0deg,  rgba(255,255,255,.018) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 44px);
+    -webkit-mask-image:radial-gradient(70% 90% at 18% 50%, #000, transparent 80%);
+            mask-image:radial-gradient(70% 90% at 18% 50%, #000, transparent 80%);
+  }
+  .hero-banner::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(110% 60% at 80% 100%, transparent 40%, rgba(0,0,0,.55) 100%),
+      linear-gradient(180deg, transparent 60%, rgba(0,0,0,.25) 100%);
+  }
+  .emblem{position:relative;width:170px;height:170px;display:grid;place-items:center;z-index:1}
+  .emblem .pulse-bg{
+    position:absolute;inset:-30px;border-radius:50%;
+    background:radial-gradient(circle, rgba(217,107,92,.25), rgba(217,107,92,0) 65%);
+    filter:blur(8px);animation:halo 6s ease-in-out infinite
+  }
+  @keyframes halo{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+  .emblem svg.mark{position:relative;z-index:1;width:170px;height:170px;display:block}
+
+  .hero-banner .content{position:relative;z-index:2;min-width:0}
+  .hero-banner .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--yt);margin-bottom:6px
+  }
+  .hero-banner .kicker .dot{width:5px;height:5px;border-radius:50%;background:var(--yt);box-shadow:0 0 8px var(--yt)}
+  .hero-banner h1{
+    font-family:"Caveat",cursive;font-weight:700;
+    font-size:78px;line-height:.92;letter-spacing:.5px;
+    color:var(--ink);margin:0 0 12px;
+    text-shadow:0 0 80px rgba(217,107,92,.15)
+  }
+  .hero-banner .lede{
+    font-family:"Inter",sans-serif;font-size:14.5px;line-height:1.5;
+    color:var(--ink-dim);margin:0 0 20px;max-width:560px
+  }
+  .hero-banner .lede b{color:var(--ink);font-weight:500}
+  .hero-banner .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip-meta{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 12px;border:1px solid var(--line);border-radius:999px;
+    background:rgba(255,255,255,.018);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    color:var(--ink-dim);letter-spacing:.04em;white-space:nowrap
+  }
+  .chip-meta b{color:var(--ink);font-weight:500}
+  .chip-meta .d{width:5px;height:5px;border-radius:50%;background:var(--ink-faint)}
+  .chip-meta.live{border-color:var(--yt-line);background:var(--yt-soft);color:var(--yt)}
+  .chip-meta.live .d{background:var(--yt);box-shadow:0 0 8px var(--yt)}
+  .chip-meta.live b{color:var(--yt)}
+
+  .hero-banner .actions-col{
+    position:relative;z-index:2;display:flex;flex-direction:column;gap:8px;min-width:170px
+  }
+  .hero-banner .actions-col .btn{justify-content:center;padding:12px 18px;font-size:12px;letter-spacing:.06em}
+  .hero-banner .actions-col .btn.primary{box-shadow:0 0 30px -10px var(--yt-glow), inset 0 1px 0 rgba(255,255,255,.06)}
+  .hero-banner .actions-col .hint{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);
+    letter-spacing:.12em;text-align:center;text-transform:uppercase;margin-top:6px
+  }
+  .hero-banner .actions-col .hint kbd{
+    border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;font-size:9px;color:var(--ink-dim)
+  }
+
+  /* ============ Pipeline strip ============ */
+  .pipeline{
+    display:grid;grid-template-columns:repeat(6, 1fr);gap:0;align-items:stretch;
+    padding:18px 22px;position:relative
+  }
+  .pipe-stage{
+    display:flex;flex-direction:column;gap:8px;padding:6px 16px;position:relative;cursor:default
+  }
+  .pipe-stage + .pipe-stage{border-left:1px dashed var(--line)}
+  .pipe-stage .stg{
+    display:flex;align-items:center;gap:8px;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-faint)
+  }
+  .pipe-stage .stg svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+  .pipe-stage .count{
+    font-family:"Caveat",cursive;font-weight:700;font-size:38px;line-height:1;
+    color:var(--ink);letter-spacing:.3px
+  }
+  .pipe-stage .hint-line{
+    font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.04em
+  }
+  .pipe-stage.now{
+    background:linear-gradient(180deg, rgba(217,107,92,.08), transparent 80%);
+    border-radius:10px
+  }
+  .pipe-stage.now .stg{color:var(--yt)}
+  .pipe-stage.now .stg svg{opacity:1}
+  .pipe-stage.now .count{color:var(--yt);text-shadow:0 0 24px rgba(217,107,92,.4)}
+  .pipe-stage.now .hint-line{color:var(--yt)}
+
+  /* ============ Editor (writing space) ============ */
+  .editor-card{
+    padding:0;overflow:hidden;
+    display:grid;grid-template-columns:1fr 280px;min-height:520px
+  }
+  .editor{
+    padding:24px 56px 26px;display:flex;flex-direction:column;min-width:0;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.012), transparent 30%),
+      linear-gradient(180deg, #0f0f14 0%, #0b0b0e 100%);
+    border-right:1px dashed var(--line)
+  }
+  /* doc-mode tabs */
+  .ed-modes{
+    display:flex;gap:4px;padding:3px;border:1px solid var(--line);border-radius:9px;
+    background:#0a0a0d;align-self:flex-start;margin-bottom:18px
+  }
+  .ed-modes .m{
+    padding:6px 12px;border-radius:6px;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    letter-spacing:.06em;color:var(--ink-faint);cursor:default
+  }
+  .ed-modes .m.active{
+    background:var(--yt-soft);color:var(--yt);
+    box-shadow:inset 0 0 0 1px var(--yt-line), 0 0 20px -10px var(--yt-glow)
+  }
+  .ed-toolbar{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:14px
+  }
+  .ed-save{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.08em;
+    color:var(--ink-faint);text-transform:uppercase
+  }
+  .ed-save .d{width:6px;height:6px;border-radius:50%;background:var(--fin);box-shadow:0 0 6px var(--fin)}
+  .ed-save b{color:var(--ink-dim);font-weight:500}
+
+  .ed-title{
+    font-family:"Caveat",cursive;font-weight:700;font-size:42px;line-height:1.05;
+    color:var(--ink);margin:6px 0 4px;letter-spacing:.3px;
+    border-bottom:1px dashed var(--line);padding-bottom:14px
+  }
+  .ed-body{
+    font-family:"Inter",sans-serif;font-size:15.5px;line-height:1.85;
+    color:var(--ink-warm);margin-top:18px;flex:1;max-width:640px
+  }
+  .ed-body p{margin:0 0 1.05em}
+  .ed-body p:last-child{margin-bottom:0}
+  .ed-body .h2{
+    font-family:"Caveat",cursive;font-weight:700;font-size:28px;line-height:1.2;
+    color:var(--ink);margin:18px 0 10px;letter-spacing:.3px
+  }
+  .ed-body .quote{
+    border-left:2px solid var(--yt-line);padding-left:18px;color:var(--ink-dim);font-style:italic
+  }
+  .cursor-bar{
+    display:inline-block;width:2px;height:20px;background:var(--yt);
+    vertical-align:-4px;margin-left:1px;animation:blink 1s infinite;
+    box-shadow:0 0 8px var(--yt-glow)
+  }
+  @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+  .ed-footer{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-top:18px;margin-top:18px;border-top:1px dashed var(--line);
+    font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.06em
+  }
+  .ed-footer .fmt{display:flex;gap:14px}
+  .ed-footer .fmt kbd{border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;font-size:9px;color:var(--ink-dim);margin-right:3px}
+  .ed-footer .meta-r{display:flex;gap:14px;align-items:center}
+  .ed-footer .meta-r b{color:var(--ink-dim);font-weight:500}
+
+  /* Editor side panel */
+  .ed-side{
+    padding:22px 22px;display:flex;flex-direction:column;gap:22px;
+    background:#0a0a0d;min-width:0
+  }
+  .ed-side .blk .h{
+    display:block;font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px
+  }
+  .ed-meta{
+    display:flex;flex-direction:column;gap:9px
+  }
+  .ed-meta-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-dim);letter-spacing:.02em
+  }
+  .ed-meta-row b{color:var(--ink);font-weight:500}
+  .ed-meta-row .yt{color:var(--yt)}
+
+  .quick-note{
+    border:1px dashed var(--line);border-radius:10px;background:#0c0c10;padding:12px;
+    font-family:"Inter",sans-serif;font-size:12.5px;color:var(--ink-dim);line-height:1.55;
+    display:flex;flex-direction:column;gap:6px
+  }
+  .quick-note .placeholder{color:var(--ink-faint);font-style:italic}
+  .quick-note .ph-cursor{
+    display:inline-block;width:1.5px;height:14px;background:var(--ink-faint);
+    vertical-align:-2px;animation:blink 1.4s infinite
+  }
+  .quick-note .send{
+    align-self:flex-end;margin-top:4px;color:var(--yt);font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;letter-spacing:.06em
+  }
+
+  .related .item{
+    display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line)
+  }
+  .related .item:last-child{border-bottom:none}
+  .related .item .d{width:5px;height:5px;border-radius:50%;background:var(--yt);box-shadow:0 0 6px var(--yt);margin-top:8px;flex:none}
+  .related .item .body{min-width:0}
+  .related .item .l1{font-size:12px;color:var(--ink);line-height:1.3}
+  .related .item .l2{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.04em}
+
+  /* ============ Two-up: Ideas + Guiones ============ */
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sect-head{display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .sect-head .ttl{display:flex;align-items:center;gap:12px}
+  .sect-head h2{font-family:"Caveat",cursive;font-weight:700;font-size:24px;margin:0;line-height:1}
+  .sect-head .meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em}
+
+  /* Ideas list */
+  .ideas{display:flex;flex-direction:column;margin-top:6px}
+  .idea{
+    display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
+    padding:13px 4px;border-bottom:1px dashed var(--line);cursor:default
+  }
+  .idea:last-child{border-bottom:none}
+  .idea .d{width:6px;height:6px;border-radius:50%;background:var(--yt);box-shadow:0 0 6px var(--yt);flex:none}
+  .idea .body{min-width:0}
+  .idea .body .l1{font-family:"Inter",sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3}
+  .idea .body .l2{
+    font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);
+    margin-top:3px;letter-spacing:.04em
+  }
+  .idea .body .l2 .tag{color:var(--yt)}
+  .idea .age{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);white-space:nowrap}
+
+  /* Guiones list */
+  .scripts{display:flex;flex-direction:column;margin-top:6px}
+  .script{
+    display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+    padding:14px 4px;border-bottom:1px dashed var(--line)
+  }
+  .script:last-child{border-bottom:none}
+  .script .ico-doc{
+    width:28px;height:32px;border-radius:5px;border:1.4px solid var(--yt-line);background:var(--yt-soft);
+    color:var(--yt);display:grid;place-items:center;font-family:"JetBrains Mono",monospace;
+    font-size:8.5px;font-weight:700;flex:none;letter-spacing:.06em
+  }
+  .script .ico-doc.neutral{color:var(--ink-dim);border-color:var(--line-2);background:#0d0d11}
+  .script .body{min-width:0}
+  .script .body .l1{font-family:"Inter",sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3}
+  .script .body .l2{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em}
+  .script .state{
+    display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.06em;border:1px solid transparent;white-space:nowrap
+  }
+  .state.borrador{background:var(--yt-soft);color:var(--yt);border-color:var(--yt-line)}
+  .state.revision{background:rgba(199,154,92,.08);color:var(--warn);border-color:rgba(199,154,92,.32)}
+  .state.aprobado{background:rgba(92,184,158,.08);color:var(--fin);border-color:rgba(92,184,158,.32)}
+  .state.idea{background:rgba(138,138,143,.05);color:var(--ink-dim);border-color:var(--line-2)}
+
+  /* ============ Producción ============ */
+  .prod{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+  .prod-col{
+    padding:18px;display:flex;flex-direction:column;gap:14px
+  }
+  .prod-col .hd{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:10px;border-bottom:1px dashed var(--line)
+  }
+  .prod-col .hd .stg{
+    display:flex;align-items:center;gap:8px;
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-faint)
+  }
+  .prod-col .hd .stg .d{width:6px;height:6px;border-radius:50%;background:var(--ink-faint)}
+  .prod-col.now .hd .stg{color:var(--yt)}
+  .prod-col.now .hd .stg .d{background:var(--yt);box-shadow:0 0 6px var(--yt)}
+  .prod-col .hd .n{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+
+  .pcard{
+    padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+    background:#0a0a0d;display:flex;flex-direction:column;gap:8px;cursor:default
+  }
+  .pcard.hot{border-color:var(--yt-line);background:var(--yt-soft);box-shadow:0 0 22px -14px var(--yt-glow)}
+  .pcard .thumb{
+    height:80px;border-radius:7px;
+    background:
+      linear-gradient(135deg, #18181d 0%, #0e0e12 100%);
+    border:1px dashed var(--line-2);
+    display:grid;place-items:center;color:var(--ink-faint);position:relative;overflow:hidden
+  }
+  .pcard .thumb svg{width:32px;height:32px;opacity:.6}
+  .pcard.hot .thumb{background:linear-gradient(135deg, rgba(217,107,92,.18), rgba(217,107,92,.02));border-color:var(--yt-line);color:var(--yt)}
+  .pcard.hot .thumb svg{opacity:.9}
+  .pcard .nm{font-family:"Inter",sans-serif;font-size:12.5px;color:var(--ink);font-weight:500;line-height:1.3}
+  .pcard .ml{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.04em}
+  .pcard .ml b{color:var(--ink-dim);font-weight:500}
+
+  /* ============ Universo creativo ============ */
+  .uni-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .pillar{
+    position:relative;padding:24px 26px;display:flex;flex-direction:column;gap:14px;
+    min-height:200px;cursor:default;transition:all .2s
+  }
+  .pillar .lab-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px
+  }
+  .pillar .num{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--ink-faint)
+  }
+  .pillar .badge{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.06em;
+    color:var(--ink-faint);display:inline-flex;align-items:center;gap:6px
+  }
+  .pillar .badge .d{width:5px;height:5px;border-radius:50%;background:var(--ink-faint)}
+  .pillar.live .badge{color:var(--yt)}
+  .pillar.live .badge .d{background:var(--yt);box-shadow:0 0 6px var(--yt)}
+  .pillar .title{
+    font-family:"Caveat",cursive;font-weight:700;font-size:34px;line-height:1.05;
+    color:var(--ink);letter-spacing:.3px;margin-top:auto
+  }
+  .pillar.live .title{color:var(--ink)}
+  .pillar .thesis{
+    font-family:"Inter",sans-serif;font-size:13px;line-height:1.55;color:var(--ink-dim);
+    max-width:300px
+  }
+  .pillar .thesis em{color:var(--yt);font-style:normal;font-weight:500}
+  .pillar.live{
+    background:
+      radial-gradient(120% 100% at 100% 0%, rgba(217,107,92,.10), transparent 55%),
+      linear-gradient(180deg, #0e0e12 0%, #0a0a0d 100%);
+  }
+  .pillar .corner{
+    position:absolute;top:18px;right:20px;color:var(--ink-faint);
+    font-family:"JetBrains Mono",monospace;font-size:14px
+  }
+  .pillar:hover .corner{color:var(--yt)}
+
+  /* Asymmetric row */
+  .uni-row{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-top:14px}
+
+  /* Ideas destacadas (editorial spark cards) */
+  .sparks{display:flex;flex-direction:column;margin-top:6px}
+  .spark{
+    display:grid;grid-template-columns:auto 1fr;gap:18px;padding:20px 4px;
+    border-bottom:1px dashed var(--line)
+  }
+  .spark:last-child{border-bottom:none}
+  .spark .star{
+    width:24px;height:24px;display:grid;place-items:center;flex:none;
+    color:var(--yt)
+  }
+  .spark .star svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px var(--yt-glow))}
+  .spark .body .head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:8px}
+  .spark .body .nm{
+    font-family:"Caveat",cursive;font-weight:700;font-size:26px;line-height:1.1;
+    color:var(--ink);letter-spacing:.3px
+  }
+  .spark .body .meta-tag{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;flex:none
+  }
+  .spark .body .note{
+    font-family:"Inter",sans-serif;font-size:13.5px;line-height:1.6;color:var(--ink-dim);
+    max-width:560px
+  }
+  .spark .body .note em{color:var(--yt);font-style:normal;font-weight:500}
+
+  /* Series + Referencias side stack */
+  .uni-side{display:flex;flex-direction:column;gap:14px}
+
+  .series-list{display:flex;flex-direction:column;margin-top:6px}
+  .serie{
+    display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
+    padding:14px 4px;border-bottom:1px dashed var(--line)
+  }
+  .serie:last-child{border-bottom:none}
+  .serie .badge-num{
+    display:grid;place-items:center;width:38px;height:30px;border-radius:6px;
+    border:1.4px solid var(--yt-line);background:var(--yt-soft);color:var(--yt);
+    font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11.5px;letter-spacing:.04em
+  }
+  .serie .nm{font-family:"Caveat",cursive;font-size:21px;line-height:1.1;color:var(--ink);letter-spacing:.2px}
+  .serie .sb{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em}
+  .serie .count{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-dim);text-align:right;line-height:1.3;white-space:nowrap}
+  .serie .count b{color:var(--yt);font-weight:500}
+
+  .refs{display:flex;flex-direction:column;margin-top:6px}
+  .ref{
+    padding:12px 4px;border-bottom:1px dashed var(--line);position:relative
+  }
+  .ref:last-child{border-bottom:none}
+  .ref .quote{
+    font-family:"Inter",sans-serif;font-style:italic;font-size:12.5px;line-height:1.55;color:var(--ink-warm);
+    padding-left:14px;border-left:2px solid var(--yt-line)
+  }
+  .ref .who{
+    display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);letter-spacing:.06em
+  }
+  .ref .who b{color:var(--ink-dim);font-weight:500}
+
+  /* ============ Publicados ============ */
+  .pubs{display:flex;flex-direction:column;margin-top:6px}
+  .pub{
+    display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;
+    padding:13px 4px;border-bottom:1px dashed var(--line)
+  }
+  .pub:last-child{border-bottom:none}
+  .pub .thumb-mini{
+    width:54px;height:32px;border-radius:5px;
+    background:linear-gradient(135deg, #18181d 0%, #0e0e12 100%);
+    border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-faint);flex:none
+  }
+  .pub .thumb-mini svg{width:14px;height:14px;opacity:.7}
+  .pub .body .nm{font-family:"Inter",sans-serif;font-size:13px;color:var(--ink);font-weight:500;line-height:1.3}
+  .pub .body .sb{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em}
+  .pub .when{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-dim);min-width:80px;text-align:right}
+  .pub .badge-pub{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.06em;
+    padding:3px 8px;border-radius:5px;border:1px solid var(--line-2);color:var(--ink-dim)
+  }
+  .pub .badge-pub.live{color:var(--fin);border-color:rgba(92,184,158,.32);background:rgba(92,184,158,.06)}
+  .pub .badge-pub.sched{color:var(--warn);border-color:rgba(199,154,92,.32);background:rgba(199,154,92,.06)}
+
+  /* ============ Mes + Último + AI ============ */
+  .month-row{display:grid;grid-template-columns:1.55fr 1fr;gap:14px}
+
+  /* Último video — featured */
+  .last-card{padding:24px 28px;display:flex;flex-direction:column;gap:20px}
+  .last-card .lc-head{
+    display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center
+  }
+  .last-thumb{
+    width:148px;height:84px;border-radius:8px;flex:none;position:relative;overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 30% 20%, rgba(217,107,92,.25), transparent 60%),
+      linear-gradient(135deg, #1a1418 0%, #0b0a0d 100%);
+    border:1px solid var(--yt-line);
+    box-shadow:0 0 30px -18px var(--yt-glow), inset 0 0 0 1px rgba(217,107,92,.08)
+  }
+  .last-thumb::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(60% 80% at 50% 50%, transparent, rgba(0,0,0,.35));
+    pointer-events:none
+  }
+  .last-thumb svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:34px;height:34px;color:var(--yt);filter:drop-shadow(0 0 12px var(--yt-glow));z-index:1}
+  .last-thumb .dur{
+    position:absolute;right:7px;bottom:7px;padding:2px 6px;border-radius:4px;
+    background:rgba(0,0,0,.6);font-family:"JetBrains Mono",monospace;font-size:9.5px;
+    color:var(--ink);letter-spacing:.04em;z-index:2
+  }
+
+  .lc-head .lc-id .kc{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--yt);margin-bottom:5px
+  }
+  .lc-head .lc-id .kc .d{width:5px;height:5px;border-radius:50%;background:var(--yt);box-shadow:0 0 8px var(--yt)}
+  .lc-head .lc-id .nm{
+    font-family:"Caveat",cursive;font-weight:700;font-size:28px;line-height:1.05;
+    color:var(--ink);letter-spacing:.3px;max-width:480px
+  }
+  .lc-head .lc-id .sb{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);
+    margin-top:5px;letter-spacing:.04em
+  }
+  .lc-head .lc-id .sb b{color:var(--ink-dim);font-weight:500}
+  .lc-head .lc-open{
+    width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--ink-faint);
+    font-family:"JetBrains Mono",monospace;font-size:14px
+  }
+
+  /* metrics row */
+  .lc-metrics{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    padding:14px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)
+  }
+  .lc-metric{padding:0 18px;position:relative}
+  .lc-metric + .lc-metric{border-left:1px dashed var(--line)}
+  .lc-metric:first-child{padding-left:0}
+  .lc-metric:last-child{padding-right:0}
+  .lc-metric .l{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px
+  }
+  .lc-metric .v{
+    font-family:"Caveat",cursive;font-weight:700;font-size:32px;line-height:1;
+    color:var(--ink);letter-spacing:.2px
+  }
+  .lc-metric .v.yt{color:var(--yt)}
+  .lc-metric .d{
+    font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);
+    margin-top:4px;letter-spacing:.04em
+  }
+  .lc-metric .d .up{color:var(--fin)}
+  .lc-metric .d .dn{color:var(--warn)}
+
+  /* AI Analysis block */
+  .ai-block{
+    display:flex;flex-direction:column;gap:14px
+  }
+  .ai-head{
+    display:flex;align-items:center;justify-content:space-between;gap:14px
+  }
+  .ai-head .l{display:flex;align-items:center;gap:10px}
+  .ai-head .l .badge{
+    display:inline-flex;align-items:center;gap:7px;
+    padding:5px 11px 5px 9px;border-radius:999px;
+    background:linear-gradient(135deg, rgba(106,167,212,.12), rgba(217,107,92,.08));
+    border:1px solid rgba(111,183,201,.25);
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--est)
+  }
+  .ai-head .l .badge svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .ai-head .l h3{
+    font-family:"Caveat",cursive;font-weight:700;font-size:23px;margin:0;line-height:1;letter-spacing:.3px
+  }
+  .ai-head .r{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);letter-spacing:.06em
+  }
+
+  .insights{display:flex;flex-direction:column;gap:0}
+  .insight{
+    display:grid;grid-template-columns:auto 110px 1fr;gap:16px;align-items:flex-start;
+    padding:14px 4px;border-top:1px solid rgba(255,255,255,.025)
+  }
+  .insight:first-child{border-top:none;padding-top:6px}
+  .insight .mk{
+    width:8px;height:8px;border-radius:50%;margin-top:8px;flex:none
+  }
+  .insight .lab{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.2em;
+    text-transform:uppercase;line-height:1.3;padding-top:5px
+  }
+  .insight .txt{
+    font-family:"Inter",sans-serif;font-size:13.5px;line-height:1.55;color:var(--ink-warm);
+    max-width:520px
+  }
+  .insight .txt em{color:var(--ink);font-style:normal;font-weight:500}
+
+  .insight.ok .mk  {background:var(--fin); box-shadow:0 0 8px rgba(92,184,158,.5)}
+  .insight.ok .lab {color:var(--fin)}
+  .insight.bad .mk {background:var(--warn);box-shadow:0 0 8px rgba(199,154,92,.5)}
+  .insight.bad .lab{color:var(--warn)}
+  .insight.why .mk {background:var(--cool);box-shadow:0 0 8px rgba(111,183,201,.5)}
+  .insight.why .lab{color:var(--cool)}
+  .insight.next .mk{background:var(--yt);  box-shadow:0 0 8px var(--yt-glow)}
+  .insight.next .lab{color:var(--yt)}
+  .insight.next .txt em{color:var(--yt)}
+
+  .ai-foot{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:14px;margin-top:6px;border-top:1px dashed var(--line);
+    font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.06em
+  }
+  .ai-foot .actions-row{display:flex;gap:8px}
+  .ai-foot .mini-btn{
+    padding:5px 10px;border:1px solid var(--line);border-radius:6px;color:var(--ink-dim);
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em
+  }
+  .ai-foot .mini-btn.primary{
+    color:var(--yt);border-color:var(--yt-line);background:var(--yt-soft)
+  }
+
+  /* Month list */
+  .month-list{display:flex;flex-direction:column;margin-top:6px}
+  .mvid{
+    display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;
+    padding:13px 4px;border-bottom:1px dashed var(--line)
+  }
+  .mvid:last-child{border-bottom:none}
+  .mvid .thb{
+    width:44px;height:28px;border-radius:5px;flex:none;
+    background:linear-gradient(135deg, #18181d 0%, #0e0e12 100%);
+    border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-faint);position:relative
+  }
+  .mvid .thb svg{width:11px;height:11px;opacity:.75}
+  .mvid.live .thb{border-color:var(--yt-line);color:var(--yt);background:var(--yt-soft)}
+  .mvid .info{min-width:0}
+  .mvid .info .nm{
+    font-family:"Inter",sans-serif;font-size:12.5px;color:var(--ink);font-weight:500;line-height:1.3;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+  }
+  .mvid .info .sb{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em}
+  .mvid .num{text-align:right;font-family:"JetBrains Mono",monospace;line-height:1.25;white-space:nowrap}
+  .mvid .num .v{font-size:12.5px;color:var(--ink);font-weight:500;letter-spacing:.02em}
+  .mvid .num .u{font-size:9.5px;color:var(--ink-faint);letter-spacing:.06em}
+  .mvid.live .num .v{color:var(--yt)}
+  .badge-now{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:2px 7px;border-radius:5px;
+    background:var(--yt-soft);border:1px solid var(--yt-line);color:var(--yt);
+    font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase
+  }
+  .badge-now .d{width:4px;height:4px;border-radius:50%;background:var(--yt);box-shadow:0 0 6px var(--yt)}
+
+  /* ============ Responsive ============ */
+  @media (max-width:1100px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:relative;height:auto;border-right:none;border-bottom:1px dashed var(--line)}
+    .row2{grid-template-columns:1fr}
+    .prod{grid-template-columns:1fr}
+    .pipeline{grid-template-columns:repeat(3,1fr)}
+    .editor-card{grid-template-columns:1fr}
+    .ed-side{border-top:1px dashed var(--line)}
+    .editor{padding:24px 28px}
+    .uni-pillars{grid-template-columns:1fr}
+    .uni-row{grid-template-columns:1fr}
+    .month-row{grid-template-columns:1fr}
+    .lc-head{grid-template-columns:auto 1fr;gap:14px}
+    .lc-head .lc-open{display:none}
+    .lc-metrics{grid-template-columns:repeat(2,1fr);gap:14px 0;border:none;padding:6px 0}
+    .lc-metric + .lc-metric{border-left:none}
+    .lc-metric{padding:10px 16px;border:1px dashed var(--line);border-radius:8px}
+    .hero-banner{grid-template-columns:120px 1fr;padding:28px}
+    .hero-banner .actions-col{grid-column:1 / -1;flex-direction:row;justify-content:flex-start}
+    .hero-banner h1{font-size:60px}
+    .emblem{width:120px;height:120px}
+    .emblem svg.mark{width:120px;height:120px}
+  }
+  @media (max-width:700px){
+    .hero-banner{grid-template-columns:1fr;padding:24px}
+    .hero-banner h1{font-size:48px}
+    .pipeline{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">◆</div>
+      <div class="name">Personal OS<small>v0.1 · local</small></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Sistema</div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 12 L6 8 L9 10 L14 4"/><path d="M10.5 4 L14 4 L14 7.5"/></svg>
+        Finanzas
+      </div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 3.5 L8 5 L14 3.5 L14 13 L8 14.5 L2 13 Z"/><path d="M8 5 L8 14.5"/></svg>
+        Estudios
+      </div>
+      <div class="nav-item active">
+        <svg class="ico" viewBox="0 0 16 16"><rect x="2" y="3.5" width="12" height="9" rx="2"/><path d="M7 6.5 L10.5 8 L7 9.5 Z" fill="currentColor" stroke="none"/></svg>
+        YouTube
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Inteligencia</div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M8 1.5 L9.2 6.8 L14.5 8 L9.2 9.2 L8 14.5 L6.8 9.2 L1.5 8 L6.8 6.8 Z"/></svg>
+        AI
+      </div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M1.5 6 L8 3 L14.5 6 L8 9 Z"/><path d="M4 7.5 L4 11 C4 11 5.5 12.5 8 12.5 C10.5 12.5 12 11 12 11 L12 7.5"/></svg>
+        Aprendizaje
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Sistema</div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.4"/><path d="M8 1 L8 3 M8 13 L8 15 M1 8 L3 8 M13 8 L15 8 M3.2 3.2 L4.6 4.6 M11.4 11.4 L12.8 12.8 M3.2 12.8 L4.6 11.4 M11.4 4.6 L12.8 3.2"/></svg>
+        Configuración
+      </div>
+    </div>
+
+    <!-- YT sub-nav -->
+    <div class="nav-group" style="margin-top:18px;border-top:1px dashed var(--line);padding-top:12px">
+      <div class="label">YouTube · vistas</div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px;color:var(--ink)">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--yt)">●</span>
+        Workspace
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Ideas
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Guiones
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Producción
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Publicados
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="avatar"></div>
+      <div>
+        <div style="font-family:'Caveat',cursive;font-size:18px;line-height:1">tú</div>
+        <div class="mono" style="font-size:9px">operator · local</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ Main ============ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="left">
+        <div class="crumbs">
+          Personal OS <span class="sep">/</span> <b style="color:var(--yt)">YouTube</b> <span class="sep">/</span> Workspace
+        </div>
+        <span class="pill"><span class="d"></span>3 piezas en producción · sync 09:42</span>
+      </div>
+      <div class="right">
+        <div class="search">⌕ buscar idea, guion, video… <span class="k">⌘K</span></div>
+        <div class="iconbtn">
+          <svg class="ico" viewBox="0 0 16 16" style="width:13px;height:13px"><path d="M3 5 L8 11 L13 5"/></svg>
+        </div>
+        <div class="iconbtn">◐</div>
+      </div>
+    </div>
+
+    <!-- ============ Hero ============ -->
+    <section class="hero-banner">
+      <div class="emblem">
+        <div class="pulse-bg"></div>
+        <svg class="mark" viewBox="0 0 200 200" fill="none">
+          <defs>
+            <radialGradient id="haloYt" cx="50%" cy="50%" r="50%">
+              <stop offset="0"   stop-color="rgba(217,107,92,.55)"/>
+              <stop offset="55%" stop-color="rgba(217,107,92,.12)"/>
+              <stop offset="100%" stop-color="rgba(217,107,92,0)"/>
+            </radialGradient>
+            <filter id="softGlowYt" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3.5"/>
+            </filter>
+            <linearGradient id="panelYt" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#181214"/>
+              <stop offset="1" stop-color="#09080a"/>
+            </linearGradient>
+          </defs>
+
+          <!-- halo -->
+          <circle cx="100" cy="100" r="95" fill="url(#haloYt)"/>
+
+          <!-- outer dashed ring -->
+          <circle cx="100" cy="100" r="92" fill="none"
+                  stroke="rgba(217,107,92,.22)" stroke-width="1" stroke-dasharray="3 7"/>
+
+          <!-- mid ring -->
+          <circle cx="100" cy="100" r="74" fill="none"
+                  stroke="rgba(217,107,92,.32)" stroke-width="1"/>
+
+          <!-- cardinal ticks -->
+          <g stroke="rgba(217,107,92,.5)" stroke-width="1.2" stroke-linecap="round">
+            <line x1="100" y1="22" x2="100" y2="29"/>
+            <line x1="100" y1="171" x2="100" y2="178"/>
+            <line x1="22" y1="100" x2="29" y2="100"/>
+            <line x1="171" y1="100" x2="178" y2="100"/>
+          </g>
+
+          <!-- central rounded-square panel -->
+          <rect x="56" y="56" width="88" height="88" rx="20"
+                fill="url(#panelYt)" stroke="rgba(217,107,92,.5)" stroke-width="1.4"/>
+          <rect x="56" y="56" width="88" height="88" rx="20"
+                fill="none" stroke="rgba(217,107,92,.1)" stroke-width="1"
+                transform="translate(2 2)" opacity=".6"/>
+
+          <!-- play triangle glow back -->
+          <path d="M86 78 L122 100 L86 122 Z"
+                fill="rgba(217,107,92,.55)" filter="url(#softGlowYt)" opacity=".7"/>
+          <!-- play triangle foreground -->
+          <path d="M86 78 L122 100 L86 122 Z"
+                fill="#e88a7d" stroke="#d96b5c" stroke-width="1.2" stroke-linejoin="round"/>
+
+          <!-- writing lines emerging from below the panel -->
+          <g stroke="rgba(217,107,92,.45)" stroke-width="1.1" stroke-linecap="round">
+            <line x1="60"  y1="156" x2="92"  y2="156"/>
+            <line x1="60"  y1="164" x2="105" y2="164"/>
+            <line x1="60"  y1="172" x2="85"  y2="172"/>
+            <line x1="112" y1="156" x2="140" y2="156"/>
+            <line x1="112" y1="164" x2="135" y2="164"/>
+          </g>
+
+          <!-- floating particles -->
+          <g fill="rgba(217,107,92,.55)">
+            <circle cx="38"  cy="68"  r="1.6"/>
+            <circle cx="162" cy="138" r="2"/>
+            <circle cx="46"  cy="148" r="1.2"/>
+            <circle cx="158" cy="48"  r="1"/>
+            <circle cx="98"  cy="36"  r="1.3"/>
+          </g>
+          <g fill="rgba(217,107,92,.25)">
+            <circle cx="28"  cy="120" r="1"/>
+            <circle cx="180" cy="80"  r="1.2"/>
+            <circle cx="68"  cy="178" r="1"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="content">
+        <div class="kicker">
+          <span class="dot"></span>
+          Módulo · 03 · creativo
+        </div>
+        <h1>YouTube</h1>
+        <p class="lede">Captura ideas, escribe guiones y avanza videos. Tu <b>workspace creativo personal</b> — sin analytics ni métricas. Solo flujo entre pensar, escribir y producir.</p>
+        <div class="chips">
+          <span class="chip-meta"><span class="d"></span><b>12</b> ideas</span>
+          <span class="chip-meta"><span class="d"></span><b>5</b> guiones en borrador</span>
+          <span class="chip-meta"><span class="d"></span><b>3</b> en producción</span>
+          <span class="chip-meta live"><span class="d"></span>escribiendo · <b>guion ep. 03</b></span>
+        </div>
+      </div>
+
+      <div class="actions-col">
+        <div class="btn primary">
+          <svg class="ico" viewBox="0 0 16 16"><path d="M5 13 L8 4 L11 13 M6.5 10 L9.5 10"/></svg>
+          idea
+        </div>
+        <div class="btn ghost">
+          <svg class="ico" viewBox="0 0 16 16"><path d="M3 2 L13 2 L13 14 L3 14 Z"/><path d="M5 6 L11 6 M5 9 L11 9 M5 12 L8 12"/></svg>
+          guion
+        </div>
+        <div class="btn ghost">
+          <svg class="ico" viewBox="0 0 16 16"><rect x="2" y="3.5" width="12" height="9" rx="2"/><path d="M7 6.5 L10.5 8 L7 9.5 Z" fill="currentColor" stroke="none"/></svg>
+          video
+        </div>
+        <div class="hint">⌘ <kbd>N</kbd> nuevo · ⌘ <kbd>K</kbd> buscar</div>
+      </div>
+    </section>
+
+    <!-- ============ Pipeline strip ============ -->
+    <div class="sk pipeline">
+      <div class="pipe-stage">
+        <div class="stg">
+          <svg viewBox="0 0 16 16"><path d="M5 13 L8 4 L11 13 M6.5 10 L9.5 10"/><circle cx="8" cy="2" r="1"/></svg>
+          Idea
+        </div>
+        <div class="count">12</div>
+        <div class="hint-line">capturadas · 4 esta sem.</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="stg">
+          <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="3.5"/><line x1="9.5" y1="9.5" x2="13" y2="13"/></svg>
+          Investigación
+        </div>
+        <div class="count">3</div>
+        <div class="hint-line">en lectura · 2 con notas</div>
+      </div>
+      <div class="pipe-stage now">
+        <div class="stg">
+          <svg viewBox="0 0 16 16"><path d="M3 2 L13 2 L13 14 L3 14 Z"/><path d="M5 6 L11 6 M5 9 L11 9 M5 12 L8 12"/></svg>
+          Guion
+        </div>
+        <div class="count">5</div>
+        <div class="hint-line">en borrador · 1 en revisión</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="stg">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4"/><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/></svg>
+          Grabación
+        </div>
+        <div class="count">2</div>
+        <div class="hint-line">programadas · vie y sáb</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="stg">
+          <svg viewBox="0 0 16 16"><path d="M2 8 L5 5 L9 9 L14 4"/><circle cx="14" cy="4" r="1.2"/></svg>
+          Edición
+        </div>
+        <div class="count">1</div>
+        <div class="hint-line">corte 60% · listo lunes</div>
+      </div>
+      <div class="pipe-stage">
+        <div class="stg">
+          <svg viewBox="0 0 16 16"><path d="M8 2 L8 12 M4 8 L8 12 L12 8" transform="rotate(180 8 8)"/><line x1="3" y1="13.5" x2="13" y2="13.5"/></svg>
+          Publicado
+        </div>
+        <div class="count">18</div>
+        <div class="hint-line">total · canal personal</div>
+      </div>
+    </div>
+
+    <!-- ============ Editor (writing space) ============ -->
+    <div>
+      <div class="sect-head" style="margin-bottom:12px">
+        <div class="ttl">
+          <div class="icobox yt sm"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M2 12 L12 2 L14 4 L4 14 L2 14 Z"/></svg></div>
+          <div>
+            <div class="label" style="color:var(--yt);letter-spacing:.22em;margin-bottom:4px">tu espacio de escritura</div>
+            <h2 style="font-size:30px">Escribir</h2>
+            <div class="meta" style="margin-top:4px">ideas, borradores y guiones — un solo lugar tranquilo</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="mono" style="font-size:10.5px;color:var(--ink-faint)">documento 3 de 5</div>
+          <div class="btn ghost" style="padding:7px 11px">
+            <svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 5 L8 10 L13 5"/></svg>
+            cambiar
+          </div>
+          <div class="btn primary" style="padding:7px 11px">
+            <svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 8 L13 8 M8 3 L8 13"/></svg>
+            nuevo
+          </div>
+        </div>
+      </div>
+
+      <div class="sk yt editor-card">
+        <!-- Editor -->
+        <div class="editor">
+          <!-- mode tabs -->
+          <div class="ed-modes">
+            <div class="m">idea</div>
+            <div class="m">borrador</div>
+            <div class="m active">guion</div>
+          </div>
+
+          <div class="ed-toolbar">
+            <div class="ed-save"><span class="d"></span> guardado · <b>hace 12 s</b></div>
+            <div class="mono" style="font-size:10px;letter-spacing:.06em">/guiones/episodio-03.md</div>
+          </div>
+
+          <!-- title (editable look) -->
+          <div class="ed-title">Episodio 03 — Sistemas modulares para crecer sin caos</div>
+
+          <!-- body -->
+          <div class="ed-body">
+            <p>Hay un momento, cuando un proyecto personal empieza a crecer, en el que todo se vuelve un poco más lento. Los archivos no están donde deberían. Los apuntes están repartidos en tres apps distintas. Las ideas se pierden entre tabs.</p>
+
+            <p>Y la respuesta más común es <em>"necesito una app más"</em>. Pero casi nunca es eso. Lo que falta no es una herramienta, es una <strong>estructura</strong>.</p>
+
+            <div class="h2">¿Qué es un sistema modular, en serio?</div>
+
+            <p>Un sistema modular no es una colección de apps. Es una manera de organizar tu vida digital donde cada pieza —finanzas, estudios, ideas— vive en su propio módulo, pero todos comparten el mismo lenguaje, los mismos atajos, la misma estética.</p>
+
+            <p class="quote">"El orden no es la ausencia de cosas. Es la ausencia de fricción para encontrarlas."</p>
+
+            <p>En este episodio quiero mostrarte cómo construí el mío<span class="cursor-bar"></span></p>
+          </div>
+
+          <div class="ed-footer">
+            <div class="fmt">
+              <span><kbd>⌘B</kbd> negrita</span>
+              <span><kbd>⌘I</kbd> cursiva</span>
+              <span><kbd>⌘K</kbd> enlace</span>
+              <span><kbd>⌘1</kbd> título</span>
+            </div>
+            <div class="meta-r">
+              <span><b>624</b> palabras</span>
+              <span><b>3 min</b> lectura</span>
+              <span><b>60%</b> draft</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side panel -->
+        <div class="ed-side">
+          <div class="blk">
+            <span class="h">Documento</span>
+            <div class="ed-meta">
+              <div class="ed-meta-row"><span>tipo</span><b class="yt">guion</b></div>
+              <div class="ed-meta-row"><span>canal</span><b>personal</b></div>
+              <div class="ed-meta-row"><span>estado</span><b>borrador · 60%</b></div>
+              <div class="ed-meta-row"><span>creado</span><b>hace 4 días</b></div>
+              <div class="ed-meta-row"><span>versiones</span><b>14</b></div>
+            </div>
+          </div>
+
+          <div class="blk">
+            <span class="h">Captura rápida</span>
+            <div class="quick-note">
+              <span class="placeholder">una nueva idea, sin salir del guion…<span class="ph-cursor"></span></span>
+              <span class="send">⏎ guardar como idea</span>
+            </div>
+          </div>
+
+          <div class="blk related">
+            <span class="h">Conectados</span>
+            <div class="item">
+              <span class="d"></span>
+              <div class="body">
+                <div class="l1">Refactor del dashboard como caso de estudio</div>
+                <div class="l2">idea · 2d</div>
+              </div>
+            </div>
+            <div class="item">
+              <span class="d" style="background:var(--ink-faint);box-shadow:none"></span>
+              <div class="body">
+                <div class="l1">Mi proceso para diseñar interfaces oscuras</div>
+                <div class="l2">guion · revisión</div>
+              </div>
+            </div>
+            <div class="item">
+              <span class="d" style="background:var(--ink-faint);box-shadow:none"></span>
+              <div class="body">
+                <div class="l1">Tres frameworks que cambié de opinión</div>
+                <div class="l2">idea · 3d</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Ideas + Guiones ============ -->
+    <div class="row2">
+      <!-- Ideas -->
+      <div class="sk">
+        <div class="sect-head" style="margin-bottom:6px">
+          <div class="ttl">
+            <div class="icobox sm yt"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M5 13 L8 4 L11 13 M6.5 10 L9.5 10"/><circle cx="8" cy="2" r="1"/></svg></div>
+            <div>
+              <h2 style="font-size:22px">Ideas</h2>
+              <div class="meta" style="margin-top:2px">12 capturadas · ligero, sin formato</div>
+            </div>
+          </div>
+          <div class="mono" style="font-size:10.5px;color:var(--yt)">+ nueva idea</div>
+        </div>
+
+        <div class="ideas">
+          <div class="idea">
+            <span class="d"></span>
+            <div class="body">
+              <div class="l1">Cómo medir lo que importa en YouTube</div>
+              <div class="l2"><span class="tag">estrategia</span> · canal personal</div>
+            </div>
+            <div class="age">2 h</div>
+          </div>
+          <div class="idea">
+            <span class="d"></span>
+            <div class="body">
+              <div class="l1">Refactor del dashboard como caso de estudio</div>
+              <div class="l2"><span class="tag">producto</span> · personal os</div>
+            </div>
+            <div class="age">ayer</div>
+          </div>
+          <div class="idea">
+            <span class="d"></span>
+            <div class="body">
+              <div class="l1">Tres frameworks que cambié de opinión</div>
+              <div class="l2"><span class="tag">opinión</span> · serie</div>
+            </div>
+            <div class="age">3 d</div>
+          </div>
+          <div class="idea">
+            <span class="d"></span>
+            <div class="body">
+              <div class="l1">Hablar con Codex como par-programmer</div>
+              <div class="l2"><span class="tag">AI</span> · técnico</div>
+            </div>
+            <div class="age">4 d</div>
+          </div>
+          <div class="idea">
+            <span class="d"></span>
+            <div class="body">
+              <div class="l1">Curva de aprendizaje en arquitectura de software</div>
+              <div class="l2"><span class="tag">estudio</span> · long-form</div>
+            </div>
+            <div class="age">6 d</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em">
+          <span>mostrando 5 de 12</span>
+          <span style="color:var(--yt)">ver todas →</span>
+        </div>
+      </div>
+
+      <!-- Guiones -->
+      <div class="sk yt">
+        <div class="sect-head" style="margin-bottom:6px">
+          <div class="ttl">
+            <div class="icobox sm yt"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 2 L13 2 L13 14 L3 14 Z"/><path d="M5 6 L11 6 M5 9 L11 9 M5 12 L8 12"/></svg></div>
+            <div>
+              <h2 style="font-size:22px">Guiones</h2>
+              <div class="meta" style="margin-top:2px">5 en proceso · borrador / revisión / aprobado</div>
+            </div>
+          </div>
+          <div class="mono" style="font-size:10.5px;color:var(--yt)">+ nuevo guion</div>
+        </div>
+
+        <div class="scripts">
+          <div class="script">
+            <div class="ico-doc">EP3</div>
+            <div class="body">
+              <div class="l1">Episodio 03 — Sistemas modulares para crecer sin caos</div>
+              <div class="l2">canal personal · 624 palabras · editando ahora</div>
+            </div>
+            <span class="state borrador">borrador · 60%</span>
+          </div>
+          <div class="script">
+            <div class="ico-doc neutral">UI</div>
+            <div class="body">
+              <div class="l1">Mi proceso para diseñar interfaces oscuras</div>
+              <div class="l2">canal personal · 1,210 palabras · 8 min</div>
+            </div>
+            <span class="state revision">revisión · 90%</span>
+          </div>
+          <div class="script">
+            <div class="ico-doc neutral">TP</div>
+            <div class="body">
+              <div class="l1">Por qué dejé de usar plantillas</div>
+              <div class="l2">canal personal · 980 palabras · listo para grabar</div>
+            </div>
+            <span class="state aprobado">aprobado · 100%</span>
+          </div>
+          <div class="script">
+            <div class="ico-doc neutral">CL</div>
+            <div class="body">
+              <div class="l1">Conversaciones útiles con Claude</div>
+              <div class="l2">canal personal · 1 párrafo · esqueleto</div>
+            </div>
+            <span class="state idea">idea</span>
+          </div>
+          <div class="script">
+            <div class="ico-doc neutral">FR</div>
+            <div class="body">
+              <div class="l1">Cómo medir lo que importa en YouTube</div>
+              <div class="l2">canal personal · 320 palabras · primera mitad</div>
+            </div>
+            <span class="state borrador">borrador · 30%</span>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em">
+          <span>5 guiones · 3,158 palabras totales</span>
+          <span style="color:var(--yt)">ver todos →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Publicados del mes + Último video + AI ============ -->
+    <div>
+      <div class="sect-head" style="margin-bottom:14px">
+        <div class="ttl">
+          <div class="icobox sm yt"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><rect x="2" y="3.5" width="12" height="9" rx="2"/><path d="M7 6.5 L10.5 8 L7 9.5 Z" fill="currentColor" stroke="none"/></svg></div>
+          <div>
+            <div class="label" style="color:var(--yt);letter-spacing:.22em;margin-bottom:4px">qué publicaste este mes</div>
+            <h2 style="font-size:30px">Mes en revisión</h2>
+            <div class="meta" style="margin-top:4px">mayo 2026 · 3 videos publicados · análisis AI sobre el último</div>
+          </div>
+        </div>
+        <div class="mono" style="font-size:10.5px;color:var(--ink-faint)">canal personal · 18 totales</div>
+      </div>
+
+      <div class="month-row">
+
+        <!-- Último video + AI -->
+        <div class="sk yt last-card">
+          <div class="lc-head">
+            <div class="last-thumb">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 4 L12 8 L5 12 Z"/></svg>
+              <span class="dur">11:24</span>
+            </div>
+            <div class="lc-id">
+              <div class="kc"><span class="d"></span>último publicado · 10 may</div>
+              <div class="nm">Episodio 01 — Por qué un Personal OS</div>
+              <div class="sb">canal personal · serie · <b>9 días</b> en vivo</div>
+            </div>
+            <div class="lc-open">→</div>
+          </div>
+
+          <!-- Metrics -->
+          <div class="lc-metrics">
+            <div class="lc-metric">
+              <div class="l">Vistas</div>
+              <div class="v yt">2,840</div>
+              <div class="d"><span class="up">▲ 38%</span> vs últ. 3</div>
+            </div>
+            <div class="lc-metric">
+              <div class="l">Tiempo medio</div>
+              <div class="v">6:48</div>
+              <div class="d"><span class="up">▲ 1:12</span> vs media</div>
+            </div>
+            <div class="lc-metric">
+              <div class="l">CTR</div>
+              <div class="v">5.4%</div>
+              <div class="d"><span class="dn">▼ 0.6 pp</span> vs media</div>
+            </div>
+            <div class="lc-metric">
+              <div class="l">Retención</div>
+              <div class="v">52%</div>
+              <div class="d"><span class="up">▲ 7 pp</span> vs media</div>
+            </div>
+          </div>
+
+          <!-- AI Analysis -->
+          <div class="ai-block">
+            <div class="ai-head">
+              <div class="l">
+                <span class="badge">
+                  <svg viewBox="0 0 16 16"><path d="M8 1.5 L9.4 6.6 L14.5 8 L9.4 9.4 L8 14.5 L6.6 9.4 L1.5 8 L6.6 6.6 Z"/></svg>
+                  análisis AI
+                </span>
+                <h3>Lectura del video</h3>
+              </div>
+              <div class="r">generado hace 2 h · claude</div>
+            </div>
+
+            <div class="insights">
+              <div class="insight ok">
+                <span class="mk"></span>
+                <span class="lab">qué funciona</span>
+                <div class="txt">La <em>retención subió 7 puntos</em>. El hook a 0:00–0:18 está reteniendo a quien llega — la frase "estructura sobre apps" engancha mejor que tus intros pasadas.</div>
+              </div>
+              <div class="insight bad">
+                <span class="mk"></span>
+                <span class="lab">qué no</span>
+                <div class="txt">El <em>CTR bajó a 5.4%</em>. La miniatura compite con el título — ambos llevan la misma carga de información en lugar de complementarse.</div>
+              </div>
+              <div class="insight why">
+                <span class="mk"></span>
+                <span class="lab">posible razón</span>
+                <div class="txt">El espectador <em>ya entiende el video antes de hacer clic</em>. No queda una pregunta abierta que justifique los 11 minutos de tu lado.</div>
+              </div>
+              <div class="insight next">
+                <span class="mk"></span>
+                <span class="lab">siguiente paso</span>
+                <div class="txt">Para el <em>Episodio 02</em>: probar miniatura sin texto, dejar el título cargar el "qué" y la imagen el "por qué". Bajar al mínimo la redundancia visual.</div>
+              </div>
+            </div>
+
+            <div class="ai-foot">
+              <div class="actions-row">
+                <span class="mini-btn primary">+ guardar como nota</span>
+                <span class="mini-btn">regenerar</span>
+                <span class="mini-btn">comparar con ep. 02</span>
+              </div>
+              <span>3 insights accionables · 1 idea derivada</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mes -->
+        <div class="sk" style="padding:22px 24px">
+          <div class="sect-head" style="margin-bottom:6px">
+            <div class="ttl">
+              <div class="icobox sm"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6 L14 6 M6 2 L6 5 M10 2 L10 5"/></svg></div>
+              <div>
+                <h2 style="font-size:20px">Publicados · mayo</h2>
+                <div class="meta" style="margin-top:2px">3 piezas este mes</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="month-list">
+            <div class="mvid live">
+              <div class="thb"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 4 L12 8 L5 12 Z"/></svg></div>
+              <div class="info">
+                <div class="nm">Episodio 01 — Por qué un Personal OS</div>
+                <div class="sb">10 may · <span class="badge-now"><span class="d"></span>último</span></div>
+              </div>
+              <div class="num"><div class="v">2,840</div><div class="u">vistas</div></div>
+            </div>
+            <div class="mvid">
+              <div class="thb"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5 4 L12 8 L5 12 Z"/></svg></div>
+              <div class="info">
+                <div class="nm">Cómo organizo mi semana sin apps</div>
+                <div class="sb">3 may · 6 min</div>
+              </div>
+              <div class="num"><div class="v">1,920</div><div class="u">vistas</div></div>
+            </div>
+            <div class="mvid">
+              <div class="thb"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5 4 L12 8 L5 12 Z"/></svg></div>
+              <div class="info">
+                <div class="nm">Trabajar sin métricas por una semana</div>
+                <div class="sb">1 may · 7 min</div>
+              </div>
+              <div class="num"><div class="v">1,480</div><div class="u">vistas</div></div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em">
+            <span>total mes</span>
+            <span style="color:var(--ink)"><b>6,240</b> vistas</span>
+          </div>
+
+          <!-- Programado al pie -->
+          <div style="margin-top:18px;padding-top:14px;border-top:1px dashed var(--line)">
+            <div class="label" style="margin-bottom:10px">próximo</div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px dashed var(--warn);border-radius:9px;background:rgba(199,154,92,.04)">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 8px rgba(199,154,92,.5);flex:none"></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:'Inter',sans-serif;font-size:12.5px;color:var(--ink);font-weight:500;line-height:1.3">Por qué dejé de usar plantillas</div>
+                <div class="mono" style="font-size:9.5px;color:var(--warn);margin-top:3px;letter-spacing:.06em">programado · sáb 24 may</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- footer -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;margin-top:8px;border-top:1px dashed var(--line);color:var(--ink-faint);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase">
+      <div>Personal OS · YouTube v0.1 · local-first</div>
+      <div>sync 09:42 · 18 may 2026</div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

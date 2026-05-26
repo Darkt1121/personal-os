@@ -1,0 +1,1204 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Personal OS — Estudios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:        #0a0a0c;
+    --bg-2:      #0d0d11;
+    --ink:       #e8e6e1;
+    --ink-dim:   #8a8a8f;
+    --ink-faint: #4a4a50;
+    --line:      #2a2a30;
+    --line-2:    #3a3a42;
+
+    /* Estudios module identity — cool blue */
+    --est:       #6aa7d4;
+    --est-2:     #88bce0;
+    --est-soft:  rgba(106,167,212,.10);
+    --est-line:  rgba(106,167,212,.35);
+    --est-glow:  rgba(106,167,212,.45);
+
+    /* shared accents from system */
+    --fin:       #5cb89e;        /* finanzas teal */
+    --warn:      #c79a5c;        /* amber */
+    --warn-soft: rgba(199,154,92,.08);
+    --warn-line: rgba(199,154,92,.32);
+    --cool:      #6fb7c9;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(106,167,212,.06), transparent 60%),
+    radial-gradient(1000px 500px at 100% 110%, rgba(106,167,212,.04), transparent 60%),
+    var(--bg);
+  }
+
+  /* ---------- App layout ---------- */
+  .app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+  .sidebar{
+    border-right:1px dashed var(--line);padding:18px 14px;background:#0a0a0d;
+    display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 6px 14px;border-bottom:1px dashed var(--line)}
+  .brand .logo{
+    width:32px;height:32px;border-radius:8px;background:#0e0e12;border:1.5px solid var(--est);
+    box-shadow:0 0 18px -6px var(--est-glow), inset 0 0 0 1px rgba(106,167,212,.08);
+    display:grid;place-items:center;color:var(--est);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px
+  }
+  .brand .name{font-family:"Caveat",cursive;font-size:23px;line-height:1}
+  .brand .name small{display:block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.2em;color:var(--ink-faint);margin-top:2px;text-transform:uppercase}
+
+  .nav-group{margin-top:10px}
+  .nav-group .label{padding:0 6px 6px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-dim);
+    font-family:"Caveat",cursive;font-size:19px;border:1px solid transparent;cursor:default;position:relative
+  }
+  .nav-item .ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+  .nav-item.active{background:rgba(106,167,212,.06);border-color:var(--est-line);color:var(--ink)}
+  .nav-item.active .ico{color:var(--est);opacity:1}
+  .nav-item.active::before{
+    content:"";position:absolute;width:3px;height:18px;background:var(--est);border-radius:2px;
+    margin-left:-13px;box-shadow:0 0 10px var(--est-glow)
+  }
+
+  .sidebar .foot{margin-top:auto;border-top:1px dashed var(--line);padding-top:10px;display:flex;align-items:center;gap:10px}
+  .avatar{width:28px;height:28px;border-radius:50%;border:1.5px dashed var(--line-2);background:#15151a}
+
+  .main{padding:22px 32px 80px;display:flex;flex-direction:column;gap:18px;min-width:0;max-width:1400px;width:100%}
+
+  /* Top bar */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 16px;border:1px dashed var(--line);border-radius:12px;background:#0a0a0d
+  }
+  .topbar .left,.topbar .right{display:flex;align-items:center;gap:14px}
+  .crumbs{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-dim)}
+  .crumbs .sep{color:var(--ink-faint);margin:0 6px}
+  .crumbs b{color:var(--ink)}
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;
+    padding:4px 9px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;color:var(--ink-dim);text-transform:uppercase
+  }
+  .pill .d{width:6px;height:6px;border-radius:50%;background:var(--est);box-shadow:0 0 8px var(--est)}
+  .search{
+    border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--ink-faint);
+    font-family:"JetBrains Mono",monospace;font-size:11px;background:#0c0c10;min-width:280px;display:flex;align-items:center;gap:8px
+  }
+  .search .k{margin-left:auto;border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;font-size:9px}
+  .iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-dim);font-size:12px}
+
+  /* Surfaces */
+  .sk{
+    position:relative;border:1.4px solid #252530;border-radius:14px;
+    background:
+      radial-gradient(120% 100% at 0% 0%, rgba(255,255,255,.025), transparent 50%),
+      linear-gradient(180deg, #0e0e12 0%, #0a0a0d 100%);
+    padding:18px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.015),
+      0 30px 60px -40px rgba(0,0,0,.8),
+      inset 0 1px 0 rgba(255,255,255,.025);
+  }
+  .sk.est{
+    box-shadow:
+      0 0 0 1px rgba(106,167,212,.06),
+      0 0 60px -28px var(--est-glow),
+      0 30px 60px -40px rgba(0,0,0,.85),
+      inset 0 1px 0 rgba(255,255,255,.03);
+    border-color:rgba(106,167,212,.18);
+  }
+
+  .label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+  .mono{font-family:"JetBrains Mono",monospace;color:var(--ink-dim)}
+
+  .ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+  .icobox{
+    width:34px;height:34px;border-radius:9px;border:1.4px solid var(--line-2);
+    display:grid;place-items:center;background:#0d0d11;color:var(--ink-dim);flex:none
+  }
+  .icobox.sm{width:26px;height:26px;border-radius:7px}
+  .icobox.lg{width:48px;height:48px;border-radius:12px}
+  .icobox.est{
+    color:var(--est);border-color:var(--est-line);background:var(--est-soft);
+    box-shadow:0 0 18px -10px var(--est-glow), inset 0 0 0 1px rgba(106,167,212,.08)
+  }
+  .icobox.warn{
+    color:var(--warn);border-color:var(--warn-line);background:var(--warn-soft);
+    box-shadow:0 0 18px -10px rgba(199,154,92,.45), inset 0 0 0 1px rgba(199,154,92,.08)
+  }
+  .icobox.fin{
+    color:var(--fin);border-color:rgba(92,184,158,.32);background:rgba(92,184,158,.08);
+    box-shadow:0 0 18px -10px rgba(92,184,158,.45), inset 0 0 0 1px rgba(92,184,158,.08)
+  }
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.06em;cursor:default;
+    border:1px solid var(--line-2);background:#0c0c10;color:var(--ink);transition:all .15s
+  }
+  .btn.primary{
+    border-color:var(--est-line);background:linear-gradient(180deg, rgba(106,167,212,.18), rgba(106,167,212,.06));
+    color:var(--est);box-shadow:0 0 22px -10px var(--est-glow), inset 0 1px 0 rgba(255,255,255,.04)
+  }
+  .btn.ghost{background:transparent}
+  .btn .ico{width:13px;height:13px}
+
+  /* ============ Hero banner ============ */
+  .hero-banner{
+    position:relative;overflow:hidden;
+    border-radius:18px;
+    border:1px solid rgba(106,167,212,.16);
+    background:
+      radial-gradient(70% 110% at 16% 50%, rgba(106,167,212,.22), transparent 55%),
+      radial-gradient(40% 80% at 90% 0%,   rgba(106,167,212,.07), transparent 60%),
+      radial-gradient(40% 100% at 50% 130%,rgba(106,167,212,.05), transparent 60%),
+      linear-gradient(180deg, #0c0c11 0%, #08080a 100%);
+    box-shadow:
+      0 0 0 1px rgba(106,167,212,.05),
+      0 0 100px -40px var(--est-glow),
+      0 50px 100px -50px rgba(0,0,0,.9),
+      inset 0 1px 0 rgba(255,255,255,.035);
+    padding:42px 46px;
+    display:grid;grid-template-columns:180px 1fr auto;gap:34px;align-items:center;
+    min-height:240px;
+  }
+  .hero-banner::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      repeating-linear-gradient(0deg,  rgba(255,255,255,.018) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 44px);
+    -webkit-mask-image:radial-gradient(70% 90% at 18% 50%, #000, transparent 80%);
+            mask-image:radial-gradient(70% 90% at 18% 50%, #000, transparent 80%);
+  }
+  .hero-banner::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(110% 60% at 80% 100%, transparent 40%, rgba(0,0,0,.55) 100%),
+      linear-gradient(180deg, transparent 60%, rgba(0,0,0,.25) 100%);
+  }
+  .emblem{position:relative;width:170px;height:170px;display:grid;place-items:center;z-index:1}
+  .emblem .pulse-bg{
+    position:absolute;inset:-30px;border-radius:50%;
+    background:radial-gradient(circle, rgba(106,167,212,.25), rgba(106,167,212,0) 65%);
+    filter:blur(8px);animation:halo 6s ease-in-out infinite
+  }
+  @keyframes halo{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+  .emblem svg.mark{position:relative;z-index:1;width:170px;height:170px;display:block}
+
+  .hero-banner .content{position:relative;z-index:2;min-width:0}
+  .hero-banner .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--est);margin-bottom:6px
+  }
+  .hero-banner .kicker .dot{width:5px;height:5px;border-radius:50%;background:var(--est);box-shadow:0 0 8px var(--est)}
+  .hero-banner h1{
+    font-family:"Caveat",cursive;font-weight:700;
+    font-size:78px;line-height:.92;letter-spacing:.5px;
+    color:var(--ink);margin:0 0 12px;
+    text-shadow:0 0 80px rgba(106,167,212,.15)
+  }
+  .hero-banner .lede{
+    font-family:"Inter",sans-serif;font-size:14.5px;line-height:1.5;
+    color:var(--ink-dim);margin:0 0 20px;max-width:540px
+  }
+  .hero-banner .lede b{color:var(--ink);font-weight:500}
+  .hero-banner .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip-meta{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 12px;border:1px solid var(--line);border-radius:999px;
+    background:rgba(255,255,255,.018);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    color:var(--ink-dim);letter-spacing:.04em;white-space:nowrap
+  }
+  .chip-meta b{color:var(--ink);font-weight:500}
+  .chip-meta .d{width:5px;height:5px;border-radius:50%;background:var(--ink-faint)}
+  .chip-meta.live{border-color:var(--est-line);background:var(--est-soft);color:var(--est)}
+  .chip-meta.live .d{background:var(--est);box-shadow:0 0 8px var(--est)}
+  .chip-meta.live b{color:var(--est)}
+
+  .hero-banner .actions-col{
+    position:relative;z-index:2;display:flex;flex-direction:column;gap:8px;min-width:170px
+  }
+  .hero-banner .actions-col .btn{justify-content:center;padding:12px 18px;font-size:12px;letter-spacing:.06em}
+  .hero-banner .actions-col .btn.primary{box-shadow:0 0 30px -10px var(--est-glow), inset 0 1px 0 rgba(255,255,255,.06)}
+  .hero-banner .actions-col .hint{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);
+    letter-spacing:.12em;text-align:center;text-transform:uppercase;margin-top:6px
+  }
+  .hero-banner .actions-col .hint kbd{
+    border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;font-size:9px;color:var(--ink-dim)
+  }
+
+  /* ============ KPI ============ */
+  .kpi-row{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:14px}
+  .kpi{padding:18px 20px;position:relative;display:flex;flex-direction:column;gap:6px}
+  .kpi .row1{display:flex;justify-content:space-between;align-items:center}
+  .kpi .row1 .lab{display:flex;align-items:center;gap:8px}
+  .kpi .big{font-family:"Caveat",cursive;font-weight:600;font-size:42px;line-height:1;letter-spacing:.5px;margin-top:6px;color:var(--ink)}
+  .kpi .big.est{color:var(--est)}
+  .kpi .delta{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em}
+  .kpi .delta b{color:var(--ink-dim)}
+  .kpi .spark{height:36px;margin-top:6px}
+  .kpi .spark svg{width:100%;height:100%;display:block}
+  .kpi .bars{display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:6px}
+  .kpi .bars i{flex:1;border-radius:2px;background:rgba(106,167,212,.45)}
+  .kpi .bars i.today{background:var(--est);box-shadow:0 0 8px var(--est-glow)}
+
+  /* ============ Section heads ============ */
+  .sect{display:flex;flex-direction:column;gap:14px}
+  .sect-head{display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .sect-head .ttl{display:flex;align-items:center;gap:12px}
+  .sect-head h2{font-family:"Caveat",cursive;font-weight:700;font-size:26px;margin:0;line-height:1}
+  .sect-head .meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em}
+
+  /* Range */
+  .range{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:9px;background:#0a0a0d}
+  .range .opt{
+    padding:6px 11px;border-radius:6px;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    color:var(--ink-faint);cursor:default
+  }
+  .range .opt.active{background:var(--est-soft);color:var(--est);box-shadow:inset 0 0 0 1px var(--est-line)}
+
+  /* ============ Materias grid ============ */
+  .materias{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+
+  /* Card v2 — minimalist index */
+  .materia{
+    position:relative;padding:28px 30px;
+    display:flex;flex-direction:column;gap:18px;cursor:default;transition:all .2s
+  }
+  .materia .m-head{
+    display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center
+  }
+  .materia .m-id .code{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--est);margin-bottom:5px
+  }
+  .materia .m-id .title{
+    font-family:"Caveat",cursive;font-weight:700;font-size:30px;line-height:1;
+    color:var(--ink);letter-spacing:.3px
+  }
+  .materia .m-open{
+    width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--ink-faint);
+    font-family:"JetBrains Mono",monospace;font-size:14px;transition:all .15s
+  }
+  .materia:hover .m-open{
+    border-color:var(--est-line);color:var(--est);
+    background:var(--est-soft);box-shadow:0 0 18px -10px var(--est-glow)
+  }
+  .materia .m-desc{
+    font-family:"Inter",sans-serif;font-size:13px;color:var(--ink-dim);
+    line-height:1.55;max-width:420px
+  }
+  .materia .m-foot{
+    display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:end;
+    padding-top:18px;border-top:1px dashed var(--line)
+  }
+  .materia .m-prog .m-prog-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px
+  }
+  .materia .m-prog .m-prog-row b{
+    color:var(--ink);font-weight:500;font-size:13px;letter-spacing:.02em;
+    text-transform:none
+  }
+  .materia .m-prog .bar{height:4px;border-radius:3px;background:#15151b;overflow:hidden}
+  .materia .m-prog .bar i{
+    display:block;height:100%;
+    background:linear-gradient(90deg, var(--est), rgba(106,167,212,.35));
+    border-radius:3px
+  }
+  .materia .m-next .lbl{
+    display:block;font-family:"JetBrains Mono",monospace;font-size:10px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px
+  }
+  .materia .m-next .line{
+    font-family:"Inter",sans-serif;font-size:12.5px;color:var(--ink-dim);
+    line-height:1.35
+  }
+  .materia .m-next .line b{color:var(--est);font-weight:500}
+
+  /* Submódulos chips */
+  .submods{
+    display:flex;flex-wrap:wrap;gap:6px;margin-top:2px
+  }
+  .submod{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 10px 6px 8px;border:1px solid var(--line);border-radius:8px;
+    background:#0a0a0d;
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-dim);
+    letter-spacing:.02em;transition:all .15s
+  }
+  .submod svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+  .submod .n{
+    margin-left:3px;color:var(--ink-faint);font-size:9.5px;
+    background:#101015;border:1px solid var(--line);border-radius:4px;padding:1px 5px;letter-spacing:.04em
+  }
+  .submod.hot{
+    border-color:var(--est-line);color:var(--est);background:var(--est-soft)
+  }
+  .submod.hot .n{background:rgba(106,167,212,.12);color:var(--est);border-color:var(--est-line)}
+
+  .materia .footer{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:14px;border-top:1px dashed var(--line);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint)
+  }
+  .materia .footer .next{color:var(--ink-dim)}
+  .materia .footer .next b{color:var(--est);font-weight:500}
+  .materia .footer .open{color:var(--est)}
+
+  /* ============ Library ============ */
+  .row2{display:grid;grid-template-columns:1.8fr 1fr;gap:14px}
+
+  .lib-toolbar{
+    display:flex;align-items:center;gap:14px;padding:10px 0 14px;flex-wrap:wrap
+  }
+  .lib-toolbar .types{display:flex;gap:6px}
+  .type-tab{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:7px;
+    border:1px solid var(--line);background:#0a0a0d;color:var(--ink-dim);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.04em;cursor:default
+  }
+  .type-tab svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5}
+  .type-tab.active{border-color:var(--est-line);background:var(--est-soft);color:var(--est)}
+  .type-tab .n{
+    margin-left:3px;font-size:9.5px;background:#101015;border:1px solid var(--line);
+    border-radius:4px;padding:1px 5px;color:var(--ink-faint)
+  }
+  .type-tab.active .n{background:rgba(106,167,212,.14);color:var(--est);border-color:var(--est-line)}
+
+  .files{display:flex;flex-direction:column}
+  .file{
+    display:grid;grid-template-columns:40px 1fr auto auto auto;gap:14px;align-items:center;
+    padding:14px 6px;border-bottom:1px dashed var(--line);transition:background .15s
+  }
+  .file:last-child{border-bottom:none}
+  .file:hover{background:rgba(255,255,255,.012)}
+  .file-ico{
+    width:40px;height:48px;border-radius:7px;border:1.4px solid var(--line-2);
+    background:#0d0d11;display:grid;place-items:center;color:var(--ink-dim);
+    font-family:"JetBrains Mono",monospace;font-size:8.5px;font-weight:700;letter-spacing:.08em;
+    position:relative;flex:none
+  }
+  .file-ico::before{
+    content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 8px 8px 0;
+    border-color:transparent #0a0a0c transparent transparent
+  }
+  .file-ico.pdf{color:#e07b6a;border-color:rgba(224,123,106,.35)}
+  .file-ico.ppt{color:#d49a5c;border-color:rgba(212,154,92,.32)}
+  .file-ico.md {color:var(--est); border-color:var(--est-line)}
+  .file-ico.nb {color:#a878d0; border-color:rgba(168,120,208,.35)}
+  .file-ico.dr {color:var(--ink-dim);border-style:dashed}
+  .file .meta-blk{min-width:0}
+  .file .name{
+    font-family:"Inter",sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px
+  }
+  .file .sub{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);
+    margin-top:3px;letter-spacing:.03em
+  }
+  .file .tag{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-dim);
+    display:inline-flex;align-items:center;gap:7px;white-space:nowrap
+  }
+  .file .tag .d{width:6px;height:6px;border-radius:50%;background:var(--est);box-shadow:0 0 6px var(--est)}
+  .file .size{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+  .file .when{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-dim);min-width:74px;text-align:right
+  }
+  .file.calm{padding:18px 6px}
+
+  /* ============ Focus side panel ============ */
+  .focus-panel{padding:22px 24px;display:flex;flex-direction:column;gap:22px}
+  .focus-now{
+    position:relative;padding:18px 18px 18px 22px;border-radius:11px;
+    background:linear-gradient(180deg, rgba(106,167,212,.10), rgba(106,167,212,.02));
+    border:1px solid var(--est-line);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 0 30px -18px var(--est-glow);
+    overflow:hidden
+  }
+  .focus-now::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:2px;
+    background:var(--est);border-radius:0 2px 2px 0;
+    box-shadow:0 0 10px var(--est-glow)
+  }
+  .focus-now .lab{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--est);
+    margin-bottom:8px;display:flex;align-items:center;gap:7px
+  }
+  .focus-now .lab .pulse{
+    width:6px;height:6px;border-radius:50%;background:var(--est);
+    box-shadow:0 0 0 0 var(--est-glow);animation:pulseEst 1.8s infinite
+  }
+  @keyframes pulseEst{
+    0%{box-shadow:0 0 0 0 rgba(106,167,212,.55)}
+    70%{box-shadow:0 0 0 5px rgba(106,167,212,0)}
+    100%{box-shadow:0 0 0 0 rgba(106,167,212,0)}
+  }
+  .focus-now .ttl{font-family:"Caveat",cursive;font-size:24px;line-height:1.05;color:var(--ink);margin-bottom:4px}
+  .focus-now .meta-line{
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-dim);
+    letter-spacing:.02em;margin-bottom:14px
+  }
+  .focus-now .meta-line b{color:var(--est);font-weight:500}
+  .focus-now .progress-mini{display:flex;align-items:center;gap:10px}
+  .focus-now .progress-mini .bar{
+    flex:1;height:4px;border-radius:3px;background:#15151b;overflow:hidden
+  }
+  .focus-now .progress-mini .bar i{
+    display:block;height:100%;
+    background:linear-gradient(90deg, var(--est), rgba(106,167,212,.4));
+    border-radius:3px
+  }
+  .focus-now .progress-mini .pct{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--est);
+    font-weight:500;letter-spacing:.04em
+  }
+
+  .focus-section .head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-bottom:10px;margin-bottom:8px;border-bottom:1px dashed var(--line)
+  }
+  .focus-section .head .l{
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-faint)
+  }
+  .focus-section .head .r{
+    font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint)
+  }
+  .focus-item{
+    display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
+    padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.025)
+  }
+  .focus-item:last-child{border-bottom:none}
+  .focus-item .when-tag{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.04em;
+    color:var(--ink-faint);text-align:center;min-width:38px;
+    padding:5px 7px;border:1px dashed var(--line-2);border-radius:7px;
+    line-height:1.15
+  }
+  .focus-item .when-tag b{display:block;color:var(--ink);font-weight:500;font-size:13px;letter-spacing:0}
+  .focus-item .body .l1{font-size:13px;color:var(--ink);font-weight:500;line-height:1.3}
+  .focus-item .body .l2{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.03em}
+  .focus-item .right-tag{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-faint)
+  }
+  .focus-item.hi .when-tag{border-style:solid;border-color:var(--est-line);background:var(--est-soft)}
+  .focus-item.hi .when-tag b{color:var(--est)}
+  .focus-item.hi .right-tag{color:var(--est)}
+
+  .focus-task{display:flex;align-items:center;gap:10px;padding:9px 4px}
+  .focus-task + .focus-task{border-top:1px solid rgba(255,255,255,.025)}
+  .focus-task .chk{
+    width:14px;height:14px;border:1.4px solid var(--line-2);border-radius:4px;flex:none
+  }
+  .focus-task .body{flex:1;min-width:0}
+  .focus-task .body .l1{font-size:12.5px;color:var(--ink);line-height:1.3}
+  .focus-task .body .l2{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.04em}
+  .focus-task .right{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint)}
+  .focus-task.hi .chk{border-color:var(--est);background:rgba(106,167,212,.15);box-shadow:0 0 8px var(--est-glow)}
+  .focus-task.hi .right{color:var(--est)}
+
+  /* ============ Activity ============ */
+  .timeline{position:relative;padding-left:22px}
+  .timeline::before{
+    content:"";position:absolute;left:7px;top:8px;bottom:8px;width:1.5px;
+    background:linear-gradient(180deg, var(--line-2), transparent)
+  }
+  .tl-item{
+    position:relative;padding:10px 0;display:flex;gap:12px;align-items:flex-start;
+    border-bottom:1px dashed var(--line)
+  }
+  .tl-item:last-child{border-bottom:none}
+  .tl-item .dot{
+    position:absolute;left:-19px;top:14px;width:10px;height:10px;border-radius:50%;
+    background:var(--est);box-shadow:0 0 8px var(--est-glow)
+  }
+  .tl-item .dot.muted{background:var(--ink-faint);box-shadow:none}
+  .tl-item .dot.warn{background:var(--warn);box-shadow:0 0 8px rgba(199,154,92,.5)}
+  .tl-item .body{flex:1;min-width:0}
+  .tl-item .l1{font-family:"Inter",sans-serif;font-size:13px;color:var(--ink);line-height:1.4}
+  .tl-item .l1 b{color:var(--est);font-weight:500}
+  .tl-item .l2{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);margin-top:4px;letter-spacing:.06em;text-transform:uppercase}
+  .tl-item .time{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);white-space:nowrap}
+
+  /* ============ Filters ============ */
+  .filter-bar{
+    display:flex;align-items:center;gap:16px;padding:12px 16px;flex-wrap:wrap;
+    border-radius:12px;border:1px dashed var(--line);background:#0a0a0d
+  }
+  .filter{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint);
+    letter-spacing:.04em;cursor:default
+  }
+  .filter b{color:var(--ink);font-weight:500}
+  .filter.act{
+    padding:5px 10px;border-radius:7px;background:var(--est-soft);
+    border:1px solid var(--est-line);color:var(--est)
+  }
+  .filter.act b{color:var(--est)}
+  .filter.act .x{opacity:.6;margin-left:2px}
+  .filter .caret{width:8px;height:8px;color:var(--ink-faint);opacity:.7}
+
+  /* ============ Responsive ============ */
+  @media (max-width:1100px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:relative;height:auto;border-right:none;border-bottom:1px dashed var(--line)}
+    .kpi-row{grid-template-columns:repeat(2,1fr)}
+    .materias{grid-template-columns:1fr}
+    .row2{grid-template-columns:1fr}
+    .hero-banner{grid-template-columns:120px 1fr;padding:28px}
+    .hero-banner .actions-col{grid-column:1 / -1;flex-direction:row;justify-content:flex-start}
+    .hero-banner h1{font-size:60px}
+    .emblem{width:120px;height:120px}
+    .emblem svg.mark{width:120px;height:120px}
+  }
+  @media (max-width:700px){
+    .kpi-row{grid-template-columns:1fr}
+    .hero-banner{grid-template-columns:1fr;padding:24px}
+    .hero-banner h1{font-size:48px}
+    .file{grid-template-columns:40px 1fr;gap:10px}
+    .file .tag,.file .size{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ Sidebar ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">◆</div>
+      <div class="name">Personal OS<small>v0.1 · local</small></div>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Sistema</div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 12 L6 8 L9 10 L14 4"/><path d="M10.5 4 L14 4 L14 7.5"/></svg>
+        Finanzas
+      </div>
+      <div class="nav-item active">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 3.5 L8 5 L14 3.5 L14 13 L8 14.5 L2 13 Z"/><path d="M8 5 L8 14.5"/></svg>
+        Estudios
+      </div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><rect x="2" y="3.5" width="12" height="9" rx="2"/><path d="M7 6.5 L10.5 8 L7 9.5 Z" fill="currentColor" stroke="none"/></svg>
+        YouTube
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Inteligencia</div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M8 1.5 L9.2 6.8 L14.5 8 L9.2 9.2 L8 14.5 L6.8 9.2 L1.5 8 L6.8 6.8 Z"/></svg>
+        AI
+      </div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M1.5 6 L8 3 L14.5 6 L8 9 Z"/><path d="M4 7.5 L4 11 C4 11 5.5 12.5 8 12.5 C10.5 12.5 12 11 12 11 L12 7.5"/></svg>
+        Aprendizaje
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Sistema</div>
+      <div class="nav-item">
+        <svg class="ico" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.4"/><path d="M8 1 L8 3 M8 13 L8 15 M1 8 L3 8 M13 8 L15 8 M3.2 3.2 L4.6 4.6 M11.4 11.4 L12.8 12.8 M3.2 12.8 L4.6 11.4 M11.4 4.6 L12.8 3.2"/></svg>
+        Configuración
+      </div>
+    </div>
+
+    <!-- Sub-nav specific to Estudios -->
+    <div class="nav-group" style="margin-top:18px;border-top:1px dashed var(--line);padding-top:12px">
+      <div class="label">Estudios · vistas</div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px;color:var(--ink)">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--est)">●</span>
+        Materias
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Biblioteca
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Apuntes
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Evaluaciones
+      </div>
+      <div class="nav-item" style="font-size:17px;padding:6px 10px">
+        <span style="width:16px;display:inline-block;text-align:center;color:var(--ink-faint)">○</span>
+        Calendario
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="avatar"></div>
+      <div>
+        <div style="font-family:'Caveat',cursive;font-size:18px;line-height:1">tú</div>
+        <div class="mono" style="font-size:9px">operator · local</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ Main ============ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="left">
+        <div class="crumbs">
+          Personal OS <span class="sep">/</span> <b style="color:var(--est)">Estudios</b> <span class="sep">/</span> Materias
+        </div>
+        <span class="pill"><span class="d"></span>4 materias activas · sync 09:42</span>
+      </div>
+      <div class="right">
+        <div class="search">⌕ buscar materia, apunte, archivo… <span class="k">⌘K</span></div>
+        <div class="iconbtn">
+          <svg class="ico" viewBox="0 0 16 16" style="width:13px;height:13px"><path d="M3 5 L8 11 L13 5"/></svg>
+        </div>
+        <div class="iconbtn">◐</div>
+      </div>
+    </div>
+
+    <!-- ============ Hero banner ============ -->
+    <section class="hero-banner">
+      <!-- Emblem: open book + constellation -->
+      <div class="emblem">
+        <div class="pulse-bg"></div>
+        <svg class="mark" viewBox="0 0 200 200" fill="none">
+          <defs>
+            <radialGradient id="haloEst" cx="50%" cy="50%" r="50%">
+              <stop offset="0"    stop-color="rgba(106,167,212,.55)"/>
+              <stop offset="55%"  stop-color="rgba(106,167,212,.12)"/>
+              <stop offset="100%" stop-color="rgba(106,167,212,0)"/>
+            </radialGradient>
+            <filter id="softGlowEst" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3.5"/>
+            </filter>
+            <linearGradient id="pageL" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0e1318"/>
+              <stop offset="1" stop-color="#080a0c"/>
+            </linearGradient>
+            <linearGradient id="pageR" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#101418"/>
+              <stop offset="1" stop-color="#080a0c"/>
+            </linearGradient>
+          </defs>
+
+          <!-- inner halo glow -->
+          <circle cx="100" cy="100" r="95" fill="url(#haloEst)"/>
+
+          <!-- outer dashed ring -->
+          <circle cx="100" cy="100" r="92" fill="none"
+                  stroke="rgba(106,167,212,.22)" stroke-width="1" stroke-dasharray="3 7"/>
+
+          <!-- mid ring -->
+          <circle cx="100" cy="100" r="74" fill="none"
+                  stroke="rgba(106,167,212,.32)" stroke-width="1"/>
+
+          <!-- cardinal ticks -->
+          <g stroke="rgba(106,167,212,.5)" stroke-width="1.2" stroke-linecap="round">
+            <line x1="100" y1="22" x2="100" y2="29"/>
+            <line x1="100" y1="171" x2="100" y2="178"/>
+            <line x1="22" y1="100" x2="29" y2="100"/>
+            <line x1="171" y1="100" x2="178" y2="100"/>
+          </g>
+
+          <!-- open book: two pages with spine -->
+          <!-- left page -->
+          <path d="M52 134 L52 92 Q52 84 60 82 L98 76 L98 138 L60 142 Q52 142 52 134 Z"
+                fill="url(#pageL)" stroke="rgba(106,167,212,.45)" stroke-width="1.3"/>
+          <!-- right page -->
+          <path d="M148 134 L148 92 Q148 84 140 82 L102 76 L102 138 L140 142 Q148 142 148 134 Z"
+                fill="url(#pageR)" stroke="rgba(106,167,212,.45)" stroke-width="1.3"/>
+          <!-- spine -->
+          <line x1="100" y1="76" x2="100" y2="138" stroke="rgba(106,167,212,.55)" stroke-width="1.2"/>
+
+          <!-- inner page outlines (back pages stacked) -->
+          <path d="M56 130 L56 96 Q56 90 62 88 L96 84"
+                fill="none" stroke="rgba(106,167,212,.18)" stroke-width=".9"/>
+          <path d="M144 130 L144 96 Q144 90 138 88 L104 84"
+                fill="none" stroke="rgba(106,167,212,.18)" stroke-width=".9"/>
+
+          <!-- text lines on pages -->
+          <g stroke="rgba(232,230,225,.45)" stroke-width="1" stroke-linecap="round">
+            <line x1="62"  y1="98"  x2="92"  y2="93"/>
+            <line x1="62"  y1="106" x2="88"  y2="101"/>
+            <line x1="62"  y1="114" x2="92"  y2="109"/>
+            <line x1="62"  y1="122" x2="84"  y2="118"/>
+            <line x1="62"  y1="130" x2="90"  y2="126"/>
+
+            <line x1="108" y1="93"  x2="138" y2="98"/>
+            <line x1="108" y1="101" x2="134" y2="106"/>
+            <line x1="108" y1="109" x2="140" y2="114"/>
+            <line x1="108" y1="118" x2="132" y2="122"/>
+            <line x1="108" y1="126" x2="138" y2="130"/>
+          </g>
+
+          <!-- constellation of knowledge above book (glow back) -->
+          <g stroke="rgba(106,167,212,.4)" stroke-width="1.1" filter="url(#softGlowEst)" opacity=".7">
+            <line x1="76"  y1="58" x2="100" y2="44"/>
+            <line x1="100" y1="44" x2="124" y2="58"/>
+            <line x1="100" y1="44" x2="92"  y2="32"/>
+            <line x1="100" y1="44" x2="112" y2="34"/>
+            <line x1="76"  y1="58" x2="64"  y2="50"/>
+            <line x1="124" y1="58" x2="138" y2="48"/>
+          </g>
+          <g stroke="rgba(106,167,212,.55)" stroke-width=".9" stroke-linecap="round">
+            <line x1="76"  y1="58" x2="100" y2="44"/>
+            <line x1="100" y1="44" x2="124" y2="58"/>
+            <line x1="100" y1="44" x2="92"  y2="32"/>
+            <line x1="100" y1="44" x2="112" y2="34"/>
+            <line x1="76"  y1="58" x2="64"  y2="50"/>
+            <line x1="124" y1="58" x2="138" y2="48"/>
+          </g>
+
+          <!-- glow nodes -->
+          <g>
+            <circle cx="100" cy="44" r="6"  fill="#6aa7d4" filter="url(#softGlowEst)" opacity=".7"/>
+            <circle cx="100" cy="44" r="3"  fill="#0a0a0c" stroke="#6aa7d4" stroke-width="1.6"/>
+            <circle cx="100" cy="44" r="1.2" fill="#6aa7d4"/>
+
+            <circle cx="76"  cy="58" r="2.4" fill="#6aa7d4"/>
+            <circle cx="124" cy="58" r="2.4" fill="#6aa7d4"/>
+            <circle cx="92"  cy="32" r="1.8" fill="#88bce0"/>
+            <circle cx="112" cy="34" r="1.6" fill="#88bce0"/>
+            <circle cx="64"  cy="50" r="1.4" fill="rgba(106,167,212,.7)"/>
+            <circle cx="138" cy="48" r="1.4" fill="rgba(106,167,212,.7)"/>
+          </g>
+
+          <!-- floating particles -->
+          <g fill="rgba(106,167,212,.55)">
+            <circle cx="38"  cy="78"  r="1.6"/>
+            <circle cx="162" cy="148" r="2"/>
+            <circle cx="48"  cy="158" r="1.2"/>
+            <circle cx="172" cy="58"  r="1"/>
+          </g>
+          <g fill="rgba(106,167,212,.25)">
+            <circle cx="28"  cy="120" r="1"/>
+            <circle cx="180" cy="100" r="1.2"/>
+            <circle cx="148" cy="170" r="1"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="content">
+        <div class="kicker">
+          <span class="dot"></span>
+          Módulo · 02 · secundario
+        </div>
+        <h1>Estudios</h1>
+        <p class="lede">Tus materias, apuntes y archivos en un solo lugar. Cada materia tiene <b>submódulos personalizables</b> — apuntes, evaluaciones, PDFs, PPTs, trabajos y recursos.</p>
+        <div class="chips">
+          <span class="chip-meta"><span class="d"></span><b>4</b> materias</span>
+          <span class="chip-meta"><span class="d"></span><b>23</b> archivos</span>
+          <span class="chip-meta"><span class="d"></span><b>38</b> apuntes</span>
+          <span class="chip-meta live"><span class="d"></span>último apunte · <b>hace 14 min</b></span>
+        </div>
+      </div>
+
+      <div class="actions-col">
+        <div class="btn primary">
+          <svg class="ico" viewBox="0 0 16 16"><path d="M3 8 L13 8 M8 3 L8 13"/></svg>
+          materia
+        </div>
+        <div class="btn ghost">
+          <svg class="ico" viewBox="0 0 16 16"><path d="M2 3 L10 3 L13 6 L13 13 L2 13 Z"/><path d="M10 3 L10 6 L13 6"/></svg>
+          archivo
+        </div>
+        <div class="btn ghost">
+          <svg class="ico" viewBox="0 0 16 16"><path d="M3 2 L13 2 L13 14 L3 14 Z"/><path d="M5 6 L11 6 M5 9 L11 9 M5 12 L8 12"/></svg>
+          apunte
+        </div>
+        <div class="hint">⌘ <kbd>K</kbd> buscar · ⌘ <kbd>N</kbd> nuevo</div>
+      </div>
+    </section>
+
+    <!-- ============ Top row · resumen accionable ============ -->
+    <div class="kpi-row">
+
+      <!-- Materias activas (lista) -->
+      <div class="sk kpi">
+        <div class="row1">
+          <div class="lab">
+            <div class="icobox sm est"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M2 3.5 L8 5 L14 3.5 L14 13 L8 14.5 L2 13 Z"/><path d="M8 5 L8 14.5"/></svg></div>
+            <div class="label">Materias activas</div>
+          </div>
+          <div class="mono" style="font-size:9.5px;color:var(--ink-faint)">cuatrim.</div>
+        </div>
+
+        <div style="margin-top:6px;margin-bottom:10px;display:flex;align-items:baseline;gap:10px">
+          <div class="big est" style="margin-top:0;font-size:46px">04</div>
+          <div class="mono" style="font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em">mayo–ago</div>
+        </div>
+
+        <div style="margin-top:auto;padding-top:12px;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-dim)">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--est);box-shadow:0 0 6px var(--est);flex:none"></span>
+            <span style="flex:1">Big Data</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-dim)">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--est);box-shadow:0 0 6px var(--est);flex:none"></span>
+            <span style="flex:1">Gestión Ágil</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-dim)">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--est);box-shadow:0 0 6px var(--est);flex:none"></span>
+            <span style="flex:1">Gestión de Riesgos</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-dim)">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--est);box-shadow:0 0 6px var(--est);flex:none"></span>
+            <span style="flex:1">Minería de Datos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Próxima entrega (featured) -->
+      <div class="sk est kpi" style="position:relative;overflow:hidden">
+        <div class="row1">
+          <div class="lab">
+            <div class="icobox sm est"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><circle cx="8" cy="8" r="5.5"/><path d="M8 5 L8 8 L10 9.5"/></svg></div>
+            <div class="label" style="color:var(--est)">Próxima entrega</div>
+          </div>
+          <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;background:var(--est-soft);border:1px solid var(--est-line);color:var(--est);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.06em">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--est);box-shadow:0 0 6px var(--est)"></span>
+            en 5 días
+          </div>
+        </div>
+
+        <div style="font-family:'Caveat',cursive;font-weight:700;font-size:40px;line-height:1.05;margin-top:14px;color:var(--ink);letter-spacing:.3px">Trabajo 02</div>
+        <div class="mono" style="font-size:12px;color:var(--ink-dim);margin-top:6px;letter-spacing:.02em"><b style="color:var(--ink);font-weight:500">Big Data</b> · viernes 23 mayo</div>
+
+        <div style="margin-top:auto;padding-top:14px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.04em">
+          <span>3 hitos abiertos · próximos 9 días</span>
+          <span style="color:var(--est)">ver todos →</span>
+        </div>
+      </div>
+
+      <!-- Actividad reciente -->
+      <div class="sk kpi">
+        <div class="row1">
+          <div class="lab">
+            <div class="icobox sm"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M2 8 L5 8 L7 4 L9 12 L11 8 L14 8"/></svg></div>
+            <div class="label">Reciente</div>
+          </div>
+          <div class="mono" style="font-size:9.5px;color:var(--ink-faint)">24 h</div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)">
+            <div style="width:26px;height:30px;border-radius:5px;border:1.4px solid rgba(224,123,106,.35);background:#0d0d11;color:#e07b6a;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;flex:none">PDF</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11.5px;color:var(--ink);font-weight:500;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">spark-pipelines.pdf</div>
+              <div class="mono" style="font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.02em">Big Data · 14 min</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:6px 0">
+            <div style="width:26px;height:30px;border-radius:5px;border:1.4px solid var(--est-line);background:var(--est-soft);color:var(--est);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;flex:none">MD</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11.5px;color:var(--ink);font-weight:500;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">apunte-mitigación.md</div>
+              <div class="mono" style="font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.02em">Gestión Riesgos · ayer</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.04em">
+          <span>23 archivos · 38 apuntes</span>
+          <span style="color:var(--est)">biblioteca →</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ Materias ============ -->
+    <div class="sect" style="margin-top:10px">
+      <div class="sect-head">
+        <div class="ttl">
+          <div class="icobox est sm">
+            <svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M2 3.5 L8 5 L14 3.5 L14 13 L8 14.5 L2 13 Z"/><path d="M8 5 L8 14.5"/></svg>
+          </div>
+          <div>
+            <div class="label" style="color:var(--est);letter-spacing:.22em;margin-bottom:4px">tu workspace académico</div>
+            <h2 style="font-size:30px">Materias</h2>
+            <div class="meta" style="margin-top:4px">cuatrim. mayo–ago · 4 activas · cada materia gestiona sus propios submódulos</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="range">
+            <div class="opt active">cuatrim.</div>
+            <div class="opt">año</div>
+            <div class="opt">todas</div>
+            <div class="opt">archivadas</div>
+          </div>
+          <div class="btn ghost" style="padding:7px 11px">
+            <svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 4 L13 4 M3 8 L13 8 M3 12 L13 12"/></svg>
+            ordenar
+          </div>
+        </div>
+      </div>
+
+      <div class="materias">
+
+        <!-- Big Data -->
+        <div class="sk est materia">
+          <div class="m-head">
+            <div class="icobox est">
+              <svg class="ico" viewBox="0 0 16 16"><ellipse cx="8" cy="3.5" rx="5" ry="1.6"/><path d="M3 3.5 L3 8 C3 9 5 10 8 10 C11 10 13 9 13 8 L13 3.5"/><path d="M3 8 L3 12.5 C3 13.5 5 14.5 8 14.5 C11 14.5 13 13.5 13 12.5 L13 8"/></svg>
+            </div>
+            <div class="m-id">
+              <div class="code">EST · 01</div>
+              <div class="title">Big Data</div>
+            </div>
+            <div class="m-open">→</div>
+          </div>
+
+          <div class="m-desc">Procesamiento distribuido, pipelines y análisis de volumen — Hadoop, Spark, fundamentos.</div>
+
+          <div class="m-foot">
+            <div class="m-next">
+              <span class="lbl">foco actual</span>
+              <div class="line">Spark · pipelines</div>
+            </div>
+            <div class="m-next">
+              <span class="lbl">próximo</span>
+              <div class="line"><b>Trabajo 02</b> · vie 23 may</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gestión Ágil -->
+        <div class="sk est materia">
+          <div class="m-head">
+            <div class="icobox est">
+              <svg class="ico" viewBox="0 0 16 16"><path d="M2 13 L2 3 L7 3 L7 13 Z"/><path d="M9 13 L9 6 L14 6 L14 13 Z"/><path d="M2 9 L7 9 M9 9 L14 9"/></svg>
+            </div>
+            <div class="m-id">
+              <div class="code">EST · 02</div>
+              <div class="title">Gestión Ágil de Proyectos</div>
+            </div>
+            <div class="m-open">→</div>
+          </div>
+
+          <div class="m-desc">Scrum, Kanban, sprints y métricas — frameworks ágiles aplicados a proyectos reales.</div>
+
+          <div class="m-foot">
+            <div class="m-next">
+              <span class="lbl">foco actual</span>
+              <div class="line">Sprints y métricas</div>
+            </div>
+            <div class="m-next">
+              <span class="lbl">próximo</span>
+              <div class="line"><b>Parcial 01</b> · lun 26 may</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gestión de Riesgos -->
+        <div class="sk est materia">
+          <div class="m-head">
+            <div class="icobox est">
+              <svg class="ico" viewBox="0 0 16 16"><path d="M8 2 L14 13 L2 13 Z"/><line x1="8" y1="6" x2="8" y2="10"/><circle cx="8" cy="11.5" r=".7" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div class="m-id">
+              <div class="code">EST · 03</div>
+              <div class="title">Gestión de Riesgos</div>
+            </div>
+            <div class="m-open">→</div>
+          </div>
+
+          <div class="m-desc">Identificación, análisis cualitativo y cuantitativo, mitigación y monitoreo de riesgos.</div>
+
+          <div class="m-foot">
+            <div class="m-next">
+              <span class="lbl">foco actual</span>
+              <div class="line">Mitigación de riesgos</div>
+            </div>
+            <div class="m-next">
+              <span class="lbl">próximo</span>
+              <div class="line"><b>Lectura cap. 4</b> · jue 22 may</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Minería de Datos -->
+        <div class="sk est materia">
+          <div class="m-head">
+            <div class="icobox est">
+              <svg class="ico" viewBox="0 0 16 16"><circle cx="6" cy="6" r="3"/><line x1="8.5" y1="8.5" x2="13" y2="13"/><circle cx="11" cy="11" r=".6" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div class="m-id">
+              <div class="code">EST · 04</div>
+              <div class="title">Minería de Datos</div>
+            </div>
+            <div class="m-open">→</div>
+          </div>
+
+          <div class="m-desc">Algoritmos de clasificación, clustering y reglas de asociación — Python + scikit-learn.</div>
+
+          <div class="m-foot">
+            <div class="m-next">
+              <span class="lbl">foco actual</span>
+              <div class="line">Clustering · k-means</div>
+            </div>
+            <div class="m-next">
+              <span class="lbl">próximo</span>
+              <div class="line"><b>Defensa proyecto</b> · mar 27 may</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ Biblioteca + En foco (workspace) ============ -->
+    <div class="row2">
+
+      <!-- Biblioteca (resumen ligero) -->
+      <div class="sk" style="padding:22px 24px">
+        <div class="sect-head" style="margin-bottom:14px">
+          <div class="ttl">
+            <div class="icobox est sm"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 2 L10 2 L13 5 L13 14 L3 14 Z"/><path d="M10 2 L10 5 L13 5"/></svg></div>
+            <div>
+              <h2 style="font-size:22px">Biblioteca</h2>
+              <div class="meta" style="margin-top:2px">recientes · 23 archivos en total</div>
+            </div>
+          </div>
+          <div class="mono" style="font-size:10.5px;color:var(--est);white-space:nowrap">ver biblioteca completa →</div>
+        </div>
+
+        <div class="files">
+          <div class="file calm">
+            <div class="file-ico pdf">PDF</div>
+            <div class="meta-blk">
+              <div class="name">spark-pipelines-procesamiento-distribuido.pdf</div>
+              <div class="sub">capítulo 4 · 24 páginas</div>
+            </div>
+            <div class="tag"><span class="d"></span>Big Data</div>
+            <div class="size">2.4 MB</div>
+            <div class="when">14 min</div>
+          </div>
+
+          <div class="file calm">
+            <div class="file-ico ppt">PPT</div>
+            <div class="meta-blk">
+              <div class="name">scrum-roles-y-ceremonias.pptx</div>
+              <div class="sub">clase 06 · 32 slides</div>
+            </div>
+            <div class="tag"><span class="d" style="background:var(--est-2)"></span>Gestión Ágil</div>
+            <div class="size">8.1 MB</div>
+            <div class="when">hoy</div>
+          </div>
+
+          <div class="file calm">
+            <div class="file-ico md">MD</div>
+            <div class="meta-blk">
+              <div class="name">apunte-leccion-4-mitigación.md</div>
+              <div class="sub">apunte propio · 4 secciones</div>
+            </div>
+            <div class="tag"><span class="d"></span>Gestión Riesgos</div>
+            <div class="size">12 KB</div>
+            <div class="when">ayer</div>
+          </div>
+
+          <div class="file calm">
+            <div class="file-ico nb">NB</div>
+            <div class="meta-blk">
+              <div class="name">clustering-kmeans-customers.ipynb</div>
+              <div class="sub">notebook · 18 celdas · validado</div>
+            </div>
+            <div class="tag"><span class="d"></span>Minería de Datos</div>
+            <div class="size">1.1 MB</div>
+            <div class="when">ayer</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-start;align-items:center;gap:6px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em">
+          arrastra archivos aquí · o <span style="color:var(--est)">⌘ U</span> para subir
+        </div>
+      </div>
+
+      <!-- En foco (panel editorial único) -->
+      <div class="sk est" style="padding:24px 26px;display:flex;flex-direction:column;gap:18px">
+        <div class="sect-head" style="margin-bottom:0">
+          <div class="ttl">
+            <div class="icobox est sm"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg></div>
+            <div>
+              <h2 style="font-size:22px">En foco</h2>
+              <div class="meta" style="margin-top:2px">esta semana</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ahora -->
+        <div class="focus-now">
+          <div class="lab"><span class="pulse"></span> ahora</div>
+          <div class="ttl">Entrega trabajo 02</div>
+          <div class="meta-line"><b>Big Data</b> · vie 23 may · en 5 días</div>
+          <div class="progress-mini">
+            <div class="bar"><i style="width:62%"></i></div>
+            <div class="pct">62%</div>
+          </div>
+        </div>
+
+        <!-- Próximo hito -->
+        <div style="padding:4px 2px 14px;border-bottom:1px dashed var(--line)">
+          <div class="label" style="display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="opacity:.6"><path d="M3 12 L8 4 L13 12 Z"/></svg>
+            Próximo hito
+          </div>
+          <div style="font-family:'Caveat',cursive;font-size:24px;line-height:1.1;color:var(--ink);margin-top:6px">Parcial 01</div>
+          <div class="mono" style="font-size:11px;color:var(--ink-dim);margin-top:4px;letter-spacing:.02em"><b style="color:var(--ink)">Gestión Ágil</b> · lun 26 may · en 8 días</div>
+        </div>
+
+        <!-- Tema actual -->
+        <div style="padding:4px 2px 0">
+          <div class="label" style="display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="opacity:.6"><path d="M3 2 L13 2 L13 14 L3 14 Z"/><path d="M5 6 L11 6 M5 9 L11 9"/></svg>
+            Tema actual
+          </div>
+          <div style="font-family:'Caveat',cursive;font-size:24px;line-height:1.1;color:var(--ink);margin-top:6px">Mitigación de riesgos cualitativos</div>
+          <div class="mono" style="font-size:11px;color:var(--ink-dim);margin-top:4px;letter-spacing:.02em"><b style="color:var(--ink)">Gestión de Riesgos</b> · capítulo 4 · 18 páginas</div>
+        </div>
+
+        <div style="margin-top:auto;padding-top:16px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.04em">
+          <span style="color:var(--ink-faint)">sync 09:42</span>
+          <span style="color:var(--est)">ver actividad reciente →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- footer -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;margin-top:8px;border-top:1px dashed var(--line);color:var(--ink-faint);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase">
+      <div>Personal OS · Estudios v0.1 · local-first</div>
+      <div>sync 09:42 · 18 may 2026</div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

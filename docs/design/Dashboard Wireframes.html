@@ -1,0 +1,2412 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Personal OS — Dashboard Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:        #0a0a0c;
+    --bg-2:      #111114;
+    --ink:       #e8e6e1;
+    --ink-dim:   #8a8a8f;
+    --ink-faint: #4a4a50;
+    --line:      #2a2a30;
+    --line-2:    #3a3a42;
+    --accent:    #c79a5c;   /* warm amber */
+    --accent-2:  #6fb7c9;   /* cool cyan  */
+    --accent-3:  #8db58a;   /* mute sage  */
+    --glow:      0 0 24px -8px rgba(199,154,92,.55);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(199,154,92,.05), transparent 60%),
+    radial-gradient(1000px 500px at 100% 110%, rgba(111,183,201,.04), transparent 60%),
+    var(--bg);
+  }
+
+  /* ---------- Page chrome ---------- */
+  .page{max-width:1480px;margin:0 auto;padding:28px 32px 80px}
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:6px}
+  .crumbs{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+  .crumbs b{color:var(--ink-dim);font-weight:500}
+  h1.kicker{font-family:"Caveat",cursive;font-weight:700;font-size:44px;line-height:1;margin:6px 0 4px;letter-spacing:.5px}
+  .sub{color:var(--ink-dim);font-size:13px;max-width:680px;line-height:1.55}
+  .legend{display:flex;gap:14px;align-items:center;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+  .legend .a{background:var(--accent)}.legend .b{background:var(--accent-2)}.legend .c{background:var(--accent-3)}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex;gap:6px;margin:24px 0 14px;flex-wrap:wrap;border-bottom:1px dashed var(--line)}
+  .tab{
+    appearance:none;background:transparent;color:var(--ink-dim);border:none;cursor:pointer;
+    font-family:"Caveat",cursive;font-size:22px;letter-spacing:.3px;padding:8px 14px 12px;position:relative;
+  }
+  .tab:hover{color:var(--ink)}
+  .tab .num{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;margin-right:8px;color:var(--ink-faint)}
+  .tab.active{color:var(--ink)}
+  .tab.active::after{content:"";position:absolute;left:6px;right:6px;bottom:-1px;height:2px;background:var(--accent);box-shadow:var(--glow)}
+
+  .stage{display:none}
+  .stage.active{display:block}
+  .stage-meta{display:flex;justify-content:space-between;align-items:baseline;margin:18px 0 14px;gap:24px}
+  .stage-meta h2{font-family:"Caveat",cursive;font-weight:700;font-size:32px;margin:0;line-height:1}
+  .stage-meta .desc{color:var(--ink-dim);font-size:13px;max-width:640px;line-height:1.55}
+
+  /* ---------- Sketchy primitives ---------- */
+  .sk{
+    position:relative;border:1.5px solid var(--line-2);border-radius:14px;background:linear-gradient(180deg, #101013 0%, #0c0c0f 100%);
+    padding:18px;
+  }
+  .sk.dashed{border-style:dashed}
+  .sk.tilt-l{transform:rotate(-.18deg)}
+  .sk.tilt-r{transform:rotate(.22deg)}
+  .sk::before{
+    /* very subtle hatch */
+    content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
+    background:repeating-linear-gradient(45deg, rgba(255,255,255,.012) 0 2px, transparent 2px 6px);
+  }
+  .sk.glow-amber{box-shadow:inset 0 0 0 1px rgba(199,154,92,.18), 0 0 30px -14px rgba(199,154,92,.45)}
+  .sk.glow-cyan {box-shadow:inset 0 0 0 1px rgba(111,183,201,.18), 0 0 30px -14px rgba(111,183,201,.45)}
+  .sk.glow-sage {box-shadow:inset 0 0 0 1px rgba(141,181,138,.18), 0 0 30px -14px rgba(141,181,138,.45)}
+
+  .label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+  .scribble{font-family:"Caveat",cursive;font-weight:600;font-size:22px;color:var(--ink)}
+  .scribble.sm{font-size:18px}
+  .scribble.lg{font-size:30px}
+  .scribble.xl{font-size:44px;line-height:1}
+  .scribble.xxl{font-size:64px;line-height:1;letter-spacing:.5px}
+  .mono{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-dim)}
+  .num{font-family:"JetBrains Mono",monospace;font-weight:500;color:var(--ink)}
+
+  /* placeholder line */
+  .ph{height:8px;border-radius:6px;background:linear-gradient(90deg,#1c1c20,#15151a);border:1px solid var(--line)}
+  .ph.w70{width:70%}.ph.w50{width:50%}.ph.w40{width:40%}.ph.w30{width:30%}.ph.w20{width:20%}
+  .ph-thin{height:5px;border-radius:5px;background:#16161b;border:1px solid #20202a}
+  .stack > * + *{margin-top:8px}
+
+  /* sketchy chart placeholder */
+  .chart{height:54px;position:relative;margin-top:8px;overflow:hidden}
+  .chart svg{width:100%;height:100%;display:block}
+
+  /* ---------- Layout: Sidebar (shared inside artboards) ---------- */
+  .ab{
+    border:1.5px dashed var(--line-2);border-radius:18px;background:#070709;padding:14px;position:relative;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.015), 0 30px 60px -40px rgba(0,0,0,.8);
+  }
+  .ab-tag{position:absolute;top:-10px;left:18px;background:#070709;padding:0 10px;color:var(--ink-faint);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  .ab-tag b{color:var(--ink-dim);font-weight:500}
+
+  .frame{display:grid;grid-template-columns:208px 1fr;gap:14px;min-height:760px}
+
+  /* ===== Sidebar · control-panel rework ===== */
+  .sidebar{
+    /* dark with very faint cool/blue undertone */
+    background:
+      linear-gradient(180deg, #0c0e14 0%, #0a0c11 50%, #08090e 100%);
+    border:1px solid rgba(255,255,255,.04);
+    border-radius:14px;padding:8px;
+    display:flex;flex-direction:column;gap:2px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.018),
+      0 1px 0 rgba(255,255,255,.04) inset,
+      0 -1px 0 rgba(0,0,0,.4) inset,
+      0 1px 2px rgba(0,0,0,.6),
+      0 20px 40px -24px rgba(0,0,0,.7),
+      0 50px 90px -50px rgba(0,0,0,.95);
+    position:relative
+  }
+  /* subtle vertical accent stripe on inner left edge */
+  .sidebar::before{
+    content:"";position:absolute;left:8px;top:54px;bottom:54px;width:1px;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,.05) 30%, rgba(255,255,255,.05) 70%, transparent);
+    pointer-events:none
+  }
+
+  /* Brand as its own mini panel · slimmer */
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 10px;border-radius:10px;
+    background:linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.008));
+    border:1px solid rgba(255,255,255,.04);
+    box-shadow:0 1px 0 rgba(255,255,255,.035) inset, 0 1px 2px rgba(0,0,0,.4);
+    margin-bottom:4px
+  }
+  .brand .logo{
+    width:32px;height:32px;border-radius:9px;
+    background:radial-gradient(120% 100% at 30% 20%, rgba(199,154,92,.22), transparent 60%), #0c0d12;
+    border:1px solid rgba(199,154,92,.35);
+    box-shadow:0 0 18px -8px var(--accent), inset 0 0 0 1px rgba(199,154,92,.1);
+    display:grid;place-items:center;color:var(--accent);
+    font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px
+  }
+  .brand .name{
+    font-family:"Inter",sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.01em;
+    color:var(--ink);line-height:1.1
+  }
+  .brand .name small{
+    display:block;font-family:"JetBrains Mono",monospace;font-size:8.5px;
+    letter-spacing:.22em;color:var(--ink-faint);margin-top:4px;text-transform:uppercase
+  }
+
+  /* Group header label · tighter */
+  .nav-group{margin-top:0}
+  .nav-group + .nav-group{margin-top:6px}
+  .nav-group .label{
+    padding:6px 10px 4px;
+    font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.24em;
+    text-transform:uppercase;color:#52525a
+  }
+  /* Configuración (last nav-group) anchors to the bottom */
+  .sidebar > .nav-group:not(:has(~ .nav-group)){margin-top:auto;padding-top:6px;
+    border-top:1px solid rgba(255,255,255,.035);position:relative}
+  .sidebar > .nav-group:not(:has(~ .nav-group))::before{
+    content:"";position:absolute;top:-1px;left:14%;right:14%;height:1px;
+    background:linear-gradient(90deg, transparent, rgba(199,154,92,.18), transparent);
+    pointer-events:none
+  }
+
+  /* Nav item: modular card-style row · tighter */
+  .nav-item{
+    position:relative;display:flex;align-items:center;gap:10px;
+    padding:7px 10px;margin:1px 0;border-radius:8px;
+    font-family:"Inter",sans-serif;font-size:12.5px;font-weight:500;
+    color:#8c8c92;letter-spacing:.005em;
+    border:1px solid transparent;background:transparent;
+    transition:all .15s ease;cursor:default;line-height:1.2
+  }
+  .nav-item:hover{
+    color:var(--ink);
+    background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.008));
+    border-color:rgba(255,255,255,.04)
+  }
+  .nav-item .ic{
+    width:14px;height:14px;border:1.4px solid currentColor;border-radius:4px;
+    flex:none;opacity:.7;transition:all .15s ease
+  }
+
+  /* Active item: panel with glow */
+  .nav-item.active{
+    color:var(--ink);
+    background:
+      radial-gradient(120% 140% at 50% 0%, rgba(199,154,92,.10), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012));
+    border:1px solid rgba(199,154,92,.22);
+    box-shadow:
+      0 0 0 1px rgba(199,154,92,.05),
+      0 1px 0 rgba(255,255,255,.05) inset,
+      0 -1px 0 rgba(0,0,0,.25) inset,
+      0 4px 14px -6px rgba(0,0,0,.55),
+      0 0 22px -8px rgba(199,154,92,.45)
+  }
+  .nav-item.active::before{
+    content:"";position:absolute;left:-1px;top:7px;bottom:7px;width:2px;
+    background:var(--accent);border-radius:2px;
+    box-shadow:0 0 10px var(--accent)
+  }
+  .nav-item.active .ic{
+    border-color:var(--accent);
+    background:rgba(199,154,92,.18);
+    box-shadow:0 0 10px -2px rgba(199,154,92,.6), inset 0 0 0 1px rgba(199,154,92,.18);
+    opacity:1
+  }
+  /* V5+ uses real SVG icons via .ico */
+  .nav-item .ico{opacity:.7;transition:all .15s ease}
+  .nav-item:hover .ico{opacity:1;color:var(--ink)}
+  .nav-item.active .ico{
+    color:var(--accent);opacity:1;
+    filter:drop-shadow(0 0 6px rgba(199,154,92,.5))
+  }
+
+  /* Footer (user chip) as its own panel · slimmer, no auto-margin */
+  .sidebar .foot{
+    margin-top:6px;display:flex;align-items:center;gap:10px;
+    padding:8px 10px;border-radius:10px;
+    background:linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.008));
+    border:1px solid rgba(255,255,255,.04);
+    box-shadow:0 1px 0 rgba(255,255,255,.035) inset, 0 1px 2px rgba(0,0,0,.4)
+  }
+  .sidebar .foot .scribble{font-family:"Inter",sans-serif;font-weight:500;font-size:12.5px;color:var(--ink)}
+  .avatar{
+    width:28px;height:28px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.08);
+    background:radial-gradient(120% 100% at 30% 20%, rgba(141,181,138,.22), transparent 60%), #0c0d12;
+    box-shadow:inset 0 0 0 1px rgba(141,181,138,.08), 0 0 12px -6px rgba(141,181,138,.4)
+  }
+  /* ===== End sidebar rework ===== */
+
+  .main{display:flex;flex-direction:column;gap:14px;min-width:0}
+  .header{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 14px;border:1px dashed var(--line);border-radius:12px;background:#0a0a0d
+  }
+  .header .left{display:flex;align-items:center;gap:14px}
+  .search{
+    border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--ink-faint);
+    font-family:"JetBrains Mono",monospace;font-size:11px;background:#0c0c10;min-width:240px;display:flex;align-items:center;gap:8px
+  }
+  .search .k{margin-left:auto;border:1px solid var(--line-2);border-radius:4px;padding:1px 5px;font-size:9px}
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;
+    padding:4px 9px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;color:var(--ink-dim);text-transform:uppercase
+  }
+  .pill .d{width:6px;height:6px;border-radius:50%;background:var(--accent-3);box-shadow:0 0 8px var(--accent-3)}
+  .iconbtn{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-dim);font-size:12px}
+
+  /* ---------- Grids ---------- */
+  .row{display:grid;gap:14px}
+  .row-3{grid-template-columns:repeat(3,1fr)}
+  .row-4{grid-template-columns:repeat(4,1fr)}
+  .row-2{grid-template-columns:repeat(2,1fr)}
+  .row-2-1{grid-template-columns:2fr 1fr}
+  .row-1-2{grid-template-columns:1fr 2fr}
+
+  /* KPI card */
+  .kpi .row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .kpi .row1 .tag{display:flex;align-items:center;gap:8px}
+  .kpi .sym{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700}
+  .kpi .sym.in{background:rgba(141,181,138,.12);color:var(--accent-3);border:1px solid rgba(141,181,138,.35)}
+  .kpi .sym.out{background:rgba(199,154,92,.12);color:var(--accent);border:1px solid rgba(199,154,92,.35)}
+  .kpi .sym.bal{background:rgba(111,183,201,.12);color:var(--accent-2);border:1px solid rgba(111,183,201,.35)}
+  .kpi .big{font-family:"Caveat",cursive;font-size:50px;line-height:1;letter-spacing:.5px;margin:8px 0 6px}
+  .kpi .big.cyan{color:var(--accent-2)}
+  .kpi .big.sage{color:var(--accent-3)}
+  .kpi .big.amber{color:var(--accent)}
+  .kpi .delta{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;color:var(--ink-faint);text-transform:uppercase}
+  .kpi .delta b{color:var(--ink-dim);font-weight:500}
+
+  /* Activity row */
+  .act{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--line)}
+  .act:last-child{border-bottom:0}
+  .act .ic{width:26px;height:26px;border-radius:7px;border:1.5px dashed var(--line-2);flex:none;background:#0d0d11}
+  .act .body{flex:1;min-width:0}
+  .act .body .l1{font-family:"Caveat",cursive;font-size:18px}
+  .act .body .l2{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase}
+  .act .time{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint)}
+
+  /* Task row */
+  .task{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--line)}
+  .task:last-child{border-bottom:0}
+  .task .check{width:16px;height:16px;border:1.5px solid var(--line-2);border-radius:5px;flex:none}
+  .task.done .check{background:rgba(141,181,138,.2);border-color:var(--accent-3)}
+  .task.done .body .l1{color:var(--ink-faint);text-decoration:line-through}
+  .task .body{flex:1}
+  .task .body .l1{font-family:"Caveat",cursive;font-size:18px}
+  .task .body .l2{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase}
+  .task .meta{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-dim)}
+  .task .tag-prio{border:1px solid var(--line-2);border-radius:4px;padding:1px 6px;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
+  .task .tag-prio.hi{color:var(--accent);border-color:rgba(199,154,92,.5)}
+
+  /* Quick access */
+  .qa{display:flex;flex-direction:column;gap:6px;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:#0a0a0d;min-height:120px;position:relative;overflow:hidden}
+  .qa .ic{width:32px;height:32px;border-radius:9px;border:1.5px solid var(--line-2);display:grid;place-items:center;font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:700;color:var(--ink)}
+  .qa.fin .ic{color:var(--accent-3);border-color:rgba(141,181,138,.4);background:rgba(141,181,138,.08)}
+  .qa.est .ic{color:var(--accent-2);border-color:rgba(111,183,201,.4);background:rgba(111,183,201,.08)}
+  .qa.yt  .ic{color:var(--accent);border-color:rgba(199,154,92,.4);background:rgba(199,154,92,.08)}
+  .qa .ttl{font-family:"Caveat",cursive;font-size:22px;margin-top:8px}
+  .qa .sub{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase}
+  .qa .arrow{position:absolute;right:14px;top:14px;color:var(--ink-faint);font-family:"JetBrains Mono",monospace}
+  .qa .stat{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-dim);margin-top:auto;border-top:1px dashed var(--line);padding-top:8px}
+
+  /* Section title with marginalia */
+  .sect-title{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+  .sect-title h3{font-family:"Caveat",cursive;font-weight:700;font-size:24px;margin:0}
+  .sect-title .meta{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase}
+
+  /* hand-drawn arrow doodle for annotations */
+  .doodle{position:absolute;font-family:"Caveat",cursive;color:var(--ink-faint);font-size:16px;line-height:1.1;pointer-events:none}
+
+  /* ---------- Mobile preview ---------- */
+  .mobile-wrap{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;margin-top:24px}
+  .phone{
+    width:300px;flex:none;border:1.5px solid var(--line-2);border-radius:36px;padding:14px 10px;background:#070709;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.015), 0 40px 80px -30px rgba(0,0,0,.9);
+    position:relative
+  }
+  .phone::before{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);width:90px;height:18px;border-radius:12px;background:#0a0a0d;border:1px solid var(--line)}
+  .phone .scr{margin-top:26px;border:1px dashed var(--line);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:540px;background:#09090c}
+
+  /* ---------- Icons (monoline) ---------- */
+  .ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+  .ico.lg{width:20px;height:20px}
+  .ico.xl{width:28px;height:28px}
+  .icobox{
+    width:34px;height:34px;border-radius:9px;border:1.4px solid var(--line-2);
+    display:grid;place-items:center;background:#0d0d11;color:var(--ink-dim);flex:none;
+    position:relative
+  }
+  .icobox.amber{color:var(--accent);border-color:rgba(199,154,92,.4);background:rgba(199,154,92,.05);box-shadow:0 0 18px -10px rgba(199,154,92,.7), inset 0 0 0 1px rgba(199,154,92,.08)}
+  .icobox.cyan {color:var(--accent-2);border-color:rgba(111,183,201,.4);background:rgba(111,183,201,.05);box-shadow:0 0 18px -10px rgba(111,183,201,.7), inset 0 0 0 1px rgba(111,183,201,.08)}
+  .icobox.sage {color:var(--accent-3);border-color:rgba(141,181,138,.4);background:rgba(141,181,138,.05);box-shadow:0 0 18px -10px rgba(141,181,138,.7), inset 0 0 0 1px rgba(141,181,138,.08)}
+  .icobox.sm{width:26px;height:26px;border-radius:7px}
+  .icobox.lg{width:44px;height:44px;border-radius:11px}
+
+  /* V5+ specific premium glow on cards — upgraded */
+  .sk.premium{
+    background:
+      radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,.045), transparent 55%),
+      radial-gradient(80% 60% at 100% 100%, rgba(199,154,92,.018), transparent 60%),
+      linear-gradient(180deg, #131318 0%, #0c0c10 60%, #0a0a0d 100%);
+    border-color:rgba(255,255,255,.055);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.022),
+      0 1px 0 rgba(255,255,255,.04) inset,
+      0 -1px 0 rgba(0,0,0,.4) inset,
+      0 1px 2px rgba(0,0,0,.6),
+      0 8px 24px -10px rgba(0,0,0,.55),
+      0 40px 70px -42px rgba(0,0,0,.95),
+      0 0 80px -40px rgba(199,154,92,.18);
+    transition:box-shadow .25s ease, transform .25s ease;
+  }
+  .sk.premium:hover{
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.03),
+      0 1px 0 rgba(255,255,255,.05) inset,
+      0 -1px 0 rgba(0,0,0,.4) inset,
+      0 1px 2px rgba(0,0,0,.6),
+      0 12px 30px -10px rgba(0,0,0,.6),
+      0 50px 90px -42px rgba(0,0,0,1),
+      0 0 100px -36px rgba(199,154,92,.28);
+  }
+  /* Featured card: amber accent halo */
+  .sk.premium.feature{
+    background:
+      radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,.05), transparent 55%),
+      radial-gradient(90% 70% at 100% 100%, rgba(199,154,92,.06), transparent 60%),
+      linear-gradient(180deg, #14130f 0%, #0d0c0a 60%, #0a0908 100%);
+    border-color:rgba(199,154,92,.16);
+    box-shadow:
+      0 0 0 1px rgba(199,154,92,.08),
+      0 1px 0 rgba(255,255,255,.05) inset,
+      0 -1px 0 rgba(0,0,0,.4) inset,
+      0 1px 2px rgba(0,0,0,.6),
+      0 8px 24px -10px rgba(0,0,0,.55),
+      0 40px 70px -40px rgba(0,0,0,.95),
+      0 0 90px -32px rgba(199,154,92,.45);
+  }
+  /* Featured cyan variant */
+  .sk.premium.feature.cyan{
+    background:
+      radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,.05), transparent 55%),
+      radial-gradient(90% 70% at 100% 100%, rgba(111,183,201,.05), transparent 60%),
+      linear-gradient(180deg, #0e1216 0%, #0a0c0e 60%, #08090b 100%);
+    border-color:rgba(111,183,201,.16);
+    box-shadow:
+      0 0 0 1px rgba(111,183,201,.08),
+      0 1px 0 rgba(255,255,255,.05) inset,
+      0 -1px 0 rgba(0,0,0,.4) inset,
+      0 1px 2px rgba(0,0,0,.6),
+      0 8px 24px -10px rgba(0,0,0,.55),
+      0 40px 70px -40px rgba(0,0,0,.95),
+      0 0 90px -32px rgba(111,183,201,.4);
+  }
+
+  /* KPI numbers: protagonists with subtle text glow */
+  .sk.premium .kpi .big{filter:drop-shadow(0 0 30px rgba(255,255,255,.04))}
+  .sk.premium .kpi .big.cyan {text-shadow:0 0 28px rgba(111,183,201,.32)}
+  .sk.premium .kpi .big.sage {text-shadow:0 0 28px rgba(141,181,138,.30)}
+  .sk.premium .kpi .big.amber{text-shadow:0 0 28px rgba(199,154,92,.34)}
+  /* KPI labels: more muted, tighter tracking */
+  .sk.premium .kpi .label{letter-spacing:.22em;color:#5a5a60}
+  .sk.premium .kpi .delta{letter-spacing:.14em}
+
+  /* workspace row (V5+ "En curso") */
+  .ws-row{
+    display:grid;grid-template-columns:14px 200px 1fr auto;gap:18px;align-items:center;
+    padding:18px 0;border-bottom:1px dashed var(--line);position:relative
+  }
+  .ws-row:last-child{border-bottom:none}
+  .ws-row .stripe{
+    width:3px;height:42px;border-radius:2px;background:var(--accent);align-self:center;
+    box-shadow:0 0 12px -2px currentColor;
+  }
+  .ws-row.amber .stripe{background:var(--accent);   color:var(--accent)}
+  .ws-row.cyan  .stripe{background:var(--accent-2); color:var(--accent-2)}
+  .ws-row.sage  .stripe{background:var(--accent-3); color:var(--accent-3)}
+  .ws-row .who{display:flex;align-items:center;gap:10px;min-width:0}
+  .ws-row .who .ttl{font-family:"Caveat",cursive;font-size:19px;line-height:1.1}
+  .ws-row .who .sub{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase;margin-top:3px}
+  .ws-row .body .lead{font-family:"Caveat",cursive;font-size:22px;line-height:1.15;color:var(--ink)}
+  .ws-row .body .meta-line{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-dim);margin-top:6px;letter-spacing:.04em}
+  .ws-row .body .meta-line b{color:var(--ink);font-weight:500}
+  .ws-row .actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:340px}
+  .ws-row .act-chip{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;
+    border:1px solid var(--line-2);background:#0c0c10;color:var(--ink-dim);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.04em;
+    transition:all .15s;cursor:default;line-height:1
+  }
+  .ws-row .act-chip.primary{background:rgba(199,154,92,.08);border-color:rgba(199,154,92,.35);color:var(--accent)}
+  .ws-row.cyan .act-chip.primary{background:rgba(111,183,201,.08);border-color:rgba(111,183,201,.35);color:var(--accent-2)}
+  .ws-row.sage .act-chip.primary{background:rgba(141,181,138,.08);border-color:rgba(141,181,138,.35);color:var(--accent-3)}
+  .ws-row .act-chip .arr{opacity:.6}
+  .ws-row .more{color:var(--ink-faint);font-family:"JetBrains Mono",monospace;font-size:10px;padding:0 4px;letter-spacing:.1em}
+
+  @media (max-width: 1100px){
+    .ws-row{grid-template-columns:14px 1fr;gap:12px}
+    .ws-row .actions{grid-column:2;justify-content:flex-start;margin-top:6px}
+    .ws-row .who{grid-column:2}
+    .ws-row .body{grid-column:2}
+  }
+
+  /* progress bar */
+  .prog{height:4px;border-radius:3px;background:#15151b;overflow:hidden;position:relative}
+  .prog > i{display:block;height:100%;background:linear-gradient(90deg, var(--accent-2), rgba(111,183,201,.4));border-radius:3px}
+  .prog.amber > i{background:linear-gradient(90deg, var(--accent), rgba(199,154,92,.4))}
+  .prog.sage  > i{background:linear-gradient(90deg, var(--accent-3), rgba(141,181,138,.4))}
+
+  /* ---------- Tweaks: density toggles ---------- */
+  body[data-density="compact"] .sk{padding:14px}
+  body[data-density="compact"] .frame{min-height:680px}
+  body[data-density="loose"]   .sk{padding:22px}
+
+  /* spacer helper */
+  .gap-8{height:8px}.gap-12{height:12px}.gap-16{height:16px}
+
+  /* small annotation note */
+  .note{
+    display:inline-block;font-family:"Caveat",cursive;color:var(--ink-faint);font-size:16px;
+    border-left:2px solid var(--line-2);padding:2px 0 2px 10px;margin-top:6px
+  }
+
+  @media (max-width: 900px){
+    .frame{grid-template-columns:1fr}
+    .row-3,.row-4{grid-template-columns:repeat(2,1fr)}
+    .row-2-1,.row-1-2{grid-template-columns:1fr}
+  }
+  /* ======================================================================
+     V5+ Visual polish pass · no structural / layout changes
+     ====================================================================== */
+  .stage[data-stage="v5plus"]{position:relative}
+  /* ambient backdrop tied to the V5+ stage */
+  .stage[data-stage="v5plus"]::before{
+    content:"";position:absolute;inset:-40px -20px auto -20px;height:520px;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(60% 80% at 30% 10%, rgba(199,154,92,.05), transparent 70%),
+      radial-gradient(50% 80% at 85% 0%,  rgba(111,183,201,.035), transparent 70%);
+    -webkit-mask-image:linear-gradient(180deg, #000, transparent);
+            mask-image:linear-gradient(180deg, #000, transparent)
+  }
+  .stage[data-stage="v5plus"] > *{position:relative;z-index:1}
+
+  /* Artboard surface · richer, softer */
+  .stage[data-stage="v5plus"] .ab{
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,.02), transparent 60%),
+      linear-gradient(180deg, #08080b 0%, #060608 100%);
+    border:1px solid rgba(255,255,255,.045);
+    border-style:solid;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.018),
+      0 1px 0 rgba(255,255,255,.035) inset,
+      0 -1px 0 rgba(0,0,0,.45) inset,
+      0 30px 60px -30px rgba(0,0,0,.7),
+      0 70px 120px -60px rgba(0,0,0,.95)
+  }
+
+  /* Top header strip inside artboard · refined surface */
+  .stage[data-stage="v5plus"] .header{
+    background:linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.005));
+    border:1px solid rgba(255,255,255,.045);border-style:solid;
+    box-shadow:0 1px 0 rgba(255,255,255,.035) inset, 0 1px 2px rgba(0,0,0,.45);
+    border-radius:12px
+  }
+  .stage[data-stage="v5plus"] .header .search{
+    background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.05);
+    color:#9a9aa0
+  }
+  .stage[data-stage="v5plus"] .header .pill{
+    background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.06)
+  }
+  .stage[data-stage="v5plus"] .header .iconbtn{
+    background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.05)
+  }
+
+  /* Section titles · a bit more presence */
+  .stage[data-stage="v5plus"] .sect-title h3{
+    letter-spacing:.3px;
+    text-shadow:0 1px 0 rgba(0,0,0,.4)
+  }
+
+  /* Hairlines · convert dashed dividers to soft gradient lines (scoped) */
+  .stage[data-stage="v5plus"] .act,
+  .stage[data-stage="v5plus"] .task,
+  .stage[data-stage="v5plus"] .ws-row{
+    border-bottom:1px solid transparent;
+    border-image:linear-gradient(90deg, transparent 0%, rgba(255,255,255,.05) 8%, rgba(255,255,255,.05) 92%, transparent 100%) 1;
+    border-image-slice:1;
+    transition:background .15s ease
+  }
+  .stage[data-stage="v5plus"] .act:last-child,
+  .stage[data-stage="v5plus"] .task:last-child,
+  .stage[data-stage="v5plus"] .ws-row:last-child{border-bottom-color:transparent !important;border-image:none}
+
+  /* Subtle row hover — lift bg, accent ido on edge */
+  .stage[data-stage="v5plus"] .act{padding:11px 6px;border-radius:6px}
+  .stage[data-stage="v5plus"] .act:hover{background:rgba(255,255,255,.012)}
+  .stage[data-stage="v5plus"] .task{padding:11px 6px;border-radius:6px}
+  .stage[data-stage="v5plus"] .task:hover{background:rgba(255,255,255,.012)}
+
+  /* Icobox amber/cyan/sage · more presence on module heads */
+  .stage[data-stage="v5plus"] .icobox.amber,
+  .stage[data-stage="v5plus"] .icobox.cyan,
+  .stage[data-stage="v5plus"] .icobox.sage{
+    border-width:1.2px
+  }
+  .stage[data-stage="v5plus"] .icobox.lg.amber{
+    box-shadow:0 0 28px -14px rgba(199,154,92,.7),
+               inset 0 0 0 1px rgba(199,154,92,.12),
+               0 1px 0 rgba(255,255,255,.04) inset
+  }
+  .stage[data-stage="v5plus"] .icobox.lg.cyan{
+    box-shadow:0 0 28px -14px rgba(111,183,201,.7),
+               inset 0 0 0 1px rgba(111,183,201,.12),
+               0 1px 0 rgba(255,255,255,.04) inset
+  }
+
+  /* Chart inner panel · subtle inner glow */
+  .stage[data-stage="v5plus"] .sk.premium.feature .chart-canvas,
+  .stage[data-stage="v5plus"] .sk.premium.feature [class*="chart"]{
+    filter:drop-shadow(0 0 24px rgba(199,154,92,.06))
+  }
+
+  /* Pendientes priority tag · slight lift */
+  .stage[data-stage="v5plus"] .task .tag-prio{
+    background:rgba(255,255,255,.015);
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset
+  }
+  .stage[data-stage="v5plus"] .task .tag-prio.hi{
+    background:rgba(199,154,92,.08);
+    box-shadow:0 0 10px -4px rgba(199,154,92,.5), 0 1px 0 rgba(255,255,255,.05) inset
+  }
+
+  /* Workspace row stripe · brighter glow on active */
+  .stage[data-stage="v5plus"] .ws-row .stripe{
+    box-shadow:0 0 14px -2px currentColor,
+               inset 0 0 0 1px rgba(255,255,255,.05)
+  }
+
+  /* Action chips inside workspace rows · subtle pop */
+  .stage[data-stage="v5plus"] .ws-row .act-chip{
+    background:rgba(255,255,255,.022);
+    box-shadow:0 1px 0 rgba(255,255,255,.035) inset, 0 1px 2px rgba(0,0,0,.35)
+  }
+  .stage[data-stage="v5plus"] .ws-row .act-chip.primary{
+    box-shadow:0 0 18px -10px var(--accent),
+               0 1px 0 rgba(255,255,255,.04) inset
+  }
+  .stage[data-stage="v5plus"] .ws-row.cyan .act-chip.primary{
+    box-shadow:0 0 18px -10px var(--accent-2),
+               0 1px 0 rgba(255,255,255,.04) inset
+  }
+  .stage[data-stage="v5plus"] .ws-row.sage .act-chip.primary{
+    box-shadow:0 0 18px -10px var(--accent-3),
+               0 1px 0 rgba(255,255,255,.04) inset
+  }
+
+  /* Slightly muted secondary text in V5+ */
+  .stage[data-stage="v5plus"] .label{color:#5a5a60}
+  .stage[data-stage="v5plus"] .meta{color:#5a5a60}
+  .stage[data-stage="v5plus"] .mono{color:#7a7a80}
+
+  /* ======================================================================
+     V5+ Card upgrade · stronger glow, light gradients, more presence
+     (no structural / layout changes)
+     ====================================================================== */
+  /* All premium cards · richer surface + visible amber halo + light sweep */
+  .stage[data-stage="v5plus"] .sk.premium{
+    background:
+      radial-gradient(140% 100% at 100% 0%, rgba(199,154,92,.06), transparent 55%),
+      radial-gradient(160% 110% at 0% 0%, rgba(255,255,255,.075), transparent 55%),
+      linear-gradient(180deg, #15151c 0%, #0e0e13 55%, #08080c 100%);
+    border-color:rgba(255,255,255,.075);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.03),
+      0 1px 0 rgba(255,255,255,.08) inset,
+      0 -1px 0 rgba(0,0,0,.55) inset,
+      0 2px 4px rgba(0,0,0,.6),
+      0 12px 30px -8px rgba(0,0,0,.7),
+      0 50px 80px -38px rgba(0,0,0,1),
+      0 0 100px -30px rgba(199,154,92,.35);
+    overflow:hidden;
+  }
+  /* light "sun" sweep top-left on every premium card */
+  .stage[data-stage="v5plus"] .sk.premium::after{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:
+      radial-gradient(900px 240px at 15% -15%, rgba(255,255,255,.08), transparent 55%),
+      radial-gradient(420px 120px at 100% 110%, rgba(199,154,92,.10), transparent 55%);
+    mix-blend-mode:screen;opacity:.95
+  }
+
+  /* Featured (amber) — visible amber wash + halo */
+  .stage[data-stage="v5plus"] .sk.premium.feature{
+    background:
+      radial-gradient(140% 100% at 100% 0%, rgba(199,154,92,.22), transparent 55%),
+      radial-gradient(160% 110% at 0% 0%, rgba(255,255,255,.09), transparent 55%),
+      linear-gradient(180deg, #1c1812 0%, #110d08 55%, #0a0807 100%);
+    border-color:rgba(199,154,92,.32);
+    box-shadow:
+      0 0 0 1px rgba(199,154,92,.18),
+      0 1px 0 rgba(255,255,255,.09) inset,
+      0 -1px 0 rgba(0,0,0,.55) inset,
+      0 2px 4px rgba(0,0,0,.6),
+      0 14px 32px -8px rgba(0,0,0,.7),
+      0 60px 100px -40px rgba(0,0,0,1),
+      0 0 120px -22px rgba(199,154,92,.75);
+  }
+  .stage[data-stage="v5plus"] .sk.premium.feature::after{
+    background:
+      radial-gradient(700px 220px at 12% -10%, rgba(255,255,255,.11), transparent 55%),
+      radial-gradient(500px 180px at 100% 110%, rgba(199,154,92,.28), transparent 55%);
+    opacity:1
+  }
+
+  /* Featured cyan (Balance) — visible cyan wash + halo */
+  .stage[data-stage="v5plus"] .sk.premium.feature.cyan{
+    background:
+      radial-gradient(140% 100% at 100% 0%, rgba(111,183,201,.20), transparent 55%),
+      radial-gradient(160% 110% at 0% 0%, rgba(255,255,255,.09), transparent 55%),
+      linear-gradient(180deg, #0d141a 0%, #08101a 55%, #060a10 100%);
+    border-color:rgba(111,183,201,.32);
+    box-shadow:
+      0 0 0 1px rgba(111,183,201,.18),
+      0 1px 0 rgba(255,255,255,.09) inset,
+      0 -1px 0 rgba(0,0,0,.55) inset,
+      0 2px 4px rgba(0,0,0,.6),
+      0 14px 32px -8px rgba(0,0,0,.7),
+      0 60px 100px -40px rgba(0,0,0,1),
+      0 0 120px -22px rgba(111,183,201,.65);
+  }
+  .stage[data-stage="v5plus"] .sk.premium.feature.cyan::after{
+    background:
+      radial-gradient(700px 220px at 12% -10%, rgba(255,255,255,.11), transparent 55%),
+      radial-gradient(500px 180px at 100% 110%, rgba(111,183,201,.24), transparent 55%)
+  }
+
+  /* Keep card content above the light sweep */
+  .stage[data-stage="v5plus"] .sk.premium:not(.greet-hero) > *{position:relative;z-index:1}
+
+  /* KPI numbers · stronger glow / clearer reading */
+  .stage[data-stage="v5plus"] .sk.premium .scribble.xxl,
+  .stage[data-stage="v5plus"] .sk.premium .scribble.xl,
+  .stage[data-stage="v5plus"] .sk.premium .kpi .big{
+    filter:drop-shadow(0 0 32px rgba(255,255,255,.05))
+  }
+  .stage[data-stage="v5plus"] .sk.premium .kpi .big.cyan,
+  .stage[data-stage="v5plus"] .sk.premium .scribble.xxl.cyan{
+    text-shadow:0 0 36px rgba(111,183,201,.55), 0 0 80px rgba(111,183,201,.25)
+  }
+  .stage[data-stage="v5plus"] .sk.premium .kpi .big.sage,
+  .stage[data-stage="v5plus"] .sk.premium .scribble.xxl.sage{
+    text-shadow:0 0 36px rgba(141,181,138,.5), 0 0 80px rgba(141,181,138,.22)
+  }
+  .stage[data-stage="v5plus"] .sk.premium .kpi .big.amber,
+  .stage[data-stage="v5plus"] .sk.premium .scribble.xxl.amber,
+  .stage[data-stage="v5plus"] .sk.premium .scribble.xxl[style*="accent"]{
+    text-shadow:0 0 36px rgba(199,154,92,.55), 0 0 80px rgba(199,154,92,.25)
+  }
+  /* Main featured chart figure inside .chart-card · pump it */
+  .stage[data-stage="v5plus"] .sk.premium.feature .scribble{
+    text-shadow:0 0 40px rgba(199,154,92,.55), 0 0 100px rgba(199,154,92,.25);
+    letter-spacing:.5px
+  }
+
+  /* Module head icoboxes · stronger luminous presence */
+  .stage[data-stage="v5plus"] .icobox.lg.amber{
+    box-shadow:
+      0 0 40px -10px rgba(199,154,92,.9),
+      inset 0 0 0 1px rgba(199,154,92,.22),
+      0 1px 0 rgba(255,255,255,.07) inset
+  }
+  .stage[data-stage="v5plus"] .icobox.lg.cyan{
+    box-shadow:
+      0 0 40px -10px rgba(111,183,201,.9),
+      inset 0 0 0 1px rgba(111,183,201,.22),
+      0 1px 0 rgba(255,255,255,.07) inset
+  }
+
+  /* ===== Sidebar upgrade · match the new card language ===== */
+  .sidebar{
+    padding:8px !important;gap:2px !important;border-radius:14px !important;
+    background:
+      radial-gradient(140% 80% at 50% -10%, rgba(255,255,255,.04), transparent 55%),
+      linear-gradient(180deg, #0e1118 0%, #0a0c12 50%, #07080c 100%) !important;
+    border:1px solid rgba(255,255,255,.06) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.022),
+      0 1px 0 rgba(255,255,255,.06) inset,
+      0 -1px 0 rgba(0,0,0,.45) inset,
+      0 2px 4px rgba(0,0,0,.5),
+      0 30px 50px -28px rgba(0,0,0,.8),
+      0 80px 120px -60px rgba(0,0,0,1) !important;
+  }
+  /* Brand + foot mini-panels · richer surface */
+  .brand,
+  .sidebar .foot{
+    background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01)) !important;
+    border:1px solid rgba(255,255,255,.06) !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.06) inset,
+      0 -1px 0 rgba(0,0,0,.3) inset,
+      0 2px 4px rgba(0,0,0,.4) !important;
+  }
+  .brand .logo{
+    box-shadow:
+      0 0 24px -6px var(--accent),
+      0 0 50px -16px var(--accent),
+      inset 0 0 0 1px rgba(199,154,92,.18),
+      0 1px 0 rgba(255,255,255,.06) inset !important;
+  }
+
+  /* Sidebar nav active · stronger panel + visible halo */
+  .nav-item.active{
+    background:
+      radial-gradient(120% 160% at 50% 0%, rgba(199,154,92,.18), transparent 65%),
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)) !important;
+    border:1px solid rgba(199,154,92,.32) !important;
+    box-shadow:
+      0 0 0 1px rgba(199,154,92,.12),
+      0 1px 0 rgba(255,255,255,.09) inset,
+      0 -1px 0 rgba(0,0,0,.35) inset,
+      0 6px 18px -6px rgba(0,0,0,.55),
+      0 0 36px -8px rgba(199,154,92,.7) !important;
+  }
+  .nav-item.active::before{
+    width:2.5px !important;
+    background:linear-gradient(180deg, var(--accent), rgba(199,154,92,.5)) !important;
+    box-shadow:
+      0 0 14px var(--accent),
+      0 0 6px var(--accent) !important;
+  }
+  .nav-item.active .ico{
+    filter:drop-shadow(0 0 10px rgba(199,154,92,.7))
+  }
+  /* hover · slightly brighter lift */
+  .nav-item:hover:not(.active){
+    background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+    border-color:rgba(255,255,255,.06)
+  }
+
+  /* ===== Greeting hero · premium hero card ===== */
+  .stage[data-stage="v5plus"] .sk.premium.greet-hero{
+    padding:36px 40px;overflow:hidden;
+    background:
+      radial-gradient(60% 100% at 0% 0%, rgba(199,154,92,.18), transparent 55%),
+      radial-gradient(50% 80% at 100% 0%, rgba(111,183,201,.10), transparent 60%),
+      radial-gradient(60% 60% at 70% 130%, rgba(199,154,92,.08), transparent 70%),
+      linear-gradient(180deg, #18171c 0%, #0e0d11 55%, #07070a 100%);
+    border:1px solid rgba(199,154,92,.22);
+    box-shadow:
+      0 0 0 1px rgba(199,154,92,.10),
+      0 1px 0 rgba(255,255,255,.10) inset,
+      0 -1px 0 rgba(0,0,0,.55) inset,
+      0 2px 6px rgba(0,0,0,.6),
+      0 18px 36px -10px rgba(0,0,0,.7),
+      0 70px 110px -38px rgba(0,0,0,1),
+      0 0 160px -20px rgba(199,154,92,.55)
+  }
+  /* faint grid overlay for texture */
+  .greet-hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      repeating-linear-gradient(0deg,  rgba(255,255,255,.018) 0 1px, transparent 1px 36px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 36px);
+    -webkit-mask-image:radial-gradient(80% 100% at 0% 50%, #000, transparent 70%);
+            mask-image:radial-gradient(80% 100% at 0% 50%, #000, transparent 70%);
+    z-index:0
+  }
+  /* left accent bar */
+  .greet-hero .accent-bar{
+    position:absolute;left:0;top:34px;bottom:34px;width:3px;
+    background:linear-gradient(180deg, transparent, var(--accent) 25%, var(--accent) 75%, transparent);
+    border-radius:0 3px 3px 0;
+    box-shadow:0 0 14px var(--accent), 0 0 6px var(--accent);
+    z-index:2
+  }
+  /* decorative concentric arcs top-right */
+  .greet-hero .deco-rings{
+    position:absolute;right:-90px;top:-90px;width:340px;height:340px;
+    pointer-events:none;z-index:0;opacity:.55
+  }
+  .greet-hero .deco-rings::before,
+  .greet-hero .deco-rings::after{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    border:1px dashed rgba(199,154,92,.2)
+  }
+  .greet-hero .deco-rings::after{inset:30px;border-color:rgba(199,154,92,.12);border-style:solid}
+  /* the "sun" radial behind the rings */
+  .greet-hero .deco-sun{
+    position:absolute;right:30px;top:30px;width:160px;height:160px;
+    background:radial-gradient(closest-side, rgba(199,154,92,.32), rgba(199,154,92,0) 70%);
+    filter:blur(20px);pointer-events:none;z-index:0
+  }
+  /* scrolling soft horizon line across the bottom */
+  .greet-hero .horizon{
+    position:absolute;left:0;right:0;bottom:0;height:60px;pointer-events:none;z-index:0;
+    background:radial-gradient(60% 40% at 30% 100%, rgba(199,154,92,.15), transparent 70%)
+  }
+  .greet-hero > div:last-child{position:relative;z-index:1}
+
+  .greet-hero .greet-kicker{
+    display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#6f6f78
+  }
+  .greet-hero .greet-kicker .live{
+    width:6px;height:6px;border-radius:50%;background:var(--accent-3);
+    box-shadow:0 0 8px var(--accent-3);
+    animation:pulseGreet 2s infinite
+  }
+  @keyframes pulseGreet{0%,100%{opacity:.65}50%{opacity:1}}
+  .greet-hero .greet-kicker .sep{color:#3a3a42}
+
+  .greet-hero .greet-title{
+    font-family:"Caveat",cursive;font-weight:700;
+    font-size:64px;line-height:.95;letter-spacing:.4px;
+    color:var(--ink);margin:0 0 12px;
+    text-shadow:0 0 50px rgba(199,154,92,.25), 0 0 100px rgba(199,154,92,.1)
+  }
+  .greet-hero .greet-sub{
+    font-family:"Caveat",cursive;font-weight:500;
+    font-size:22px;line-height:1.4;color:#a8a8ae;max-width:680px;margin:0
+  }
+  .greet-hero .greet-sub b{font-weight:600}
+  .greet-hero .greet-hl-amber{
+    color:var(--accent);
+    text-shadow:0 0 16px rgba(199,154,92,.5)
+  }
+  .greet-hero .greet-hl-sage{
+    color:var(--accent-3);
+    text-shadow:0 0 16px rgba(141,181,138,.45)
+  }
+
+  /* premium action chips */
+  .greet-hero .actions{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:240px;max-width:280px}
+  .greet-hero .chip-action{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:11px 14px;border-radius:11px;
+    font-family:"Inter",sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.005em;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.012));
+    color:var(--ink);
+    box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 1px 2px rgba(0,0,0,.4);
+    cursor:default;transition:all .15s ease
+  }
+  .greet-hero .chip-action:hover{transform:translateY(-1px);box-shadow:0 4px 14px -4px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.06) inset}
+  .greet-hero .chip-action .ic{
+    width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex:none;
+    border:1px solid var(--line-2);background:#0c0c10;color:var(--ink-dim);
+    font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700
+  }
+  .greet-hero .chip-action .arr{margin-left:auto;color:var(--ink-faint);font-family:"JetBrains Mono",monospace}
+  .greet-hero .chip-action.amber{
+    background:linear-gradient(180deg, rgba(199,154,92,.22), rgba(199,154,92,.04));
+    border-color:rgba(199,154,92,.4);color:var(--accent);
+    box-shadow:
+      0 0 0 1px rgba(199,154,92,.12),
+      0 1px 0 rgba(255,255,255,.07) inset,
+      0 1px 2px rgba(0,0,0,.4),
+      0 0 24px -6px rgba(199,154,92,.7)
+  }
+  .greet-hero .chip-action.amber .ic{
+    color:var(--accent);border-color:rgba(199,154,92,.45);background:rgba(199,154,92,.08);
+    box-shadow:0 0 10px -2px rgba(199,154,92,.6)
+  }
+  .greet-hero .chip-action.amber .arr{color:var(--accent)}
+  .greet-hero .chip-action.cyan{
+    background:linear-gradient(180deg, rgba(111,183,201,.18), rgba(111,183,201,.04));
+    border-color:rgba(111,183,201,.4);color:var(--accent-2);
+    box-shadow:
+      0 0 0 1px rgba(111,183,201,.1),
+      0 1px 0 rgba(255,255,255,.07) inset,
+      0 1px 2px rgba(0,0,0,.4),
+      0 0 22px -6px rgba(111,183,201,.55)
+  }
+  .greet-hero .chip-action.cyan .ic{
+    color:var(--accent-2);border-color:rgba(111,183,201,.45);background:rgba(111,183,201,.08);
+    box-shadow:0 0 10px -2px rgba(111,183,201,.5)
+  }
+  .greet-hero .chip-action.cyan .arr{color:var(--accent-2)}
+  .greet-hero .chip-action.dashed{
+    border-style:dashed;border-color:rgba(255,255,255,.1);color:var(--ink-dim);background:transparent;
+    box-shadow:none
+  }
+  .greet-hero .chip-action.dashed .ic{border-style:dashed}
+
+  /* ===== Hero card · live system header (no greeting) ===== */
+  .greet-hero .live-kicker{
+    display:inline-flex;align-items:center;gap:10px;margin-bottom:18px;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.28em;
+    text-transform:uppercase;color:#6f6f78
+  }
+  .greet-hero .live-kicker .live{
+    width:6px;height:6px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 8px var(--accent);animation:pulseGreet 2s infinite
+  }
+  @keyframes pulseGreet{0%,100%{opacity:.65}50%{opacity:1}}
+  .greet-hero .live-kicker .sep{color:#3a3a42}
+  .greet-hero .live-kicker b{color:var(--ink);font-weight:600;letter-spacing:.32em}
+  .greet-hero .live-kicker .v{color:var(--ink-dim)}
+
+  /* Mega title — sharp, technical, glowing */
+  .greet-hero .hero-mega{
+    font-family:"Inter",sans-serif;font-weight:700;
+    font-size:54px;line-height:.95;letter-spacing:.04em;
+    margin:0 0 22px;text-transform:uppercase;
+    background:linear-gradient(180deg, #fff 0%, #aeaeb6 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 24px rgba(199,154,92,.5)) drop-shadow(0 0 60px rgba(199,154,92,.18))
+  }
+  .greet-hero .hero-mega .accent-word{
+    background:linear-gradient(180deg, var(--accent) 0%, rgba(199,154,92,.7) 100%);
+    -webkit-background-clip:text;background-clip:text
+  }
+
+  /* Module pulse strip · 7 module activity cells */
+  .greet-hero .modules-pulse{
+    display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px
+  }
+  .greet-hero .mod-cell{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:7px 10px 8px;min-width:46px;
+    border-radius:8px;border:1px solid rgba(255,255,255,.05);
+    background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.005));
+    box-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 1px 2px rgba(0,0,0,.3);
+    position:relative;transition:all .15s
+  }
+  .greet-hero .mod-cell:hover{transform:translateY(-1px)}
+  .greet-hero .mod-cell.amber{
+    background:linear-gradient(180deg, rgba(199,154,92,.10), rgba(199,154,92,.02));
+    border-color:rgba(199,154,92,.28);
+    box-shadow:0 0 16px -8px rgba(199,154,92,.6), 0 1px 0 rgba(255,255,255,.04) inset
+  }
+  .greet-hero .mod-cell.cyan{
+    background:linear-gradient(180deg, rgba(111,183,201,.10), rgba(111,183,201,.02));
+    border-color:rgba(111,183,201,.28);
+    box-shadow:0 0 16px -8px rgba(111,183,201,.55), 0 1px 0 rgba(255,255,255,.04) inset
+  }
+  .greet-hero .mod-cell.sage{
+    background:linear-gradient(180deg, rgba(141,181,138,.10), rgba(141,181,138,.02));
+    border-color:rgba(141,181,138,.28);
+    box-shadow:0 0 16px -8px rgba(141,181,138,.55), 0 1px 0 rgba(255,255,255,.04) inset
+  }
+  .greet-hero .mod-cell.active{
+    background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border-color:rgba(255,255,255,.18);
+    box-shadow:0 0 22px -6px rgba(255,255,255,.25), 0 1px 0 rgba(255,255,255,.08) inset
+  }
+  .greet-hero .mod-cell .bars{display:flex;gap:2.5px;align-items:flex-end;height:14px}
+  .greet-hero .mod-cell .bars i{
+    width:2.5px;background:#5a5a60;border-radius:1px;
+    animation:bar-pulse 2.4s ease-in-out infinite
+  }
+  .greet-hero .mod-cell .bars i:nth-child(1){height:5px;animation-delay:0s}
+  .greet-hero .mod-cell .bars i:nth-child(2){height:11px;animation-delay:.4s}
+  .greet-hero .mod-cell .bars i:nth-child(3){height:7px;animation-delay:.8s}
+  .greet-hero .mod-cell.amber .bars i{background:var(--accent);box-shadow:0 0 4px rgba(199,154,92,.6)}
+  .greet-hero .mod-cell.cyan  .bars i{background:var(--accent-2);box-shadow:0 0 4px rgba(111,183,201,.5)}
+  .greet-hero .mod-cell.sage  .bars i{background:var(--accent-3);box-shadow:0 0 4px rgba(141,181,138,.5)}
+  .greet-hero .mod-cell.active .bars i{background:var(--ink);box-shadow:0 0 6px rgba(255,255,255,.4)}
+  @keyframes bar-pulse{
+    0%,100%{transform:scaleY(1)}
+    50%{transform:scaleY(.45)}
+  }
+  .greet-hero .mod-cell .lbl{
+    font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.18em;
+    color:#5a5a60;text-transform:uppercase
+  }
+  .greet-hero .mod-cell.amber .lbl{color:var(--accent)}
+  .greet-hero .mod-cell.cyan  .lbl{color:var(--accent-2)}
+  .greet-hero .mod-cell.sage  .lbl{color:var(--accent-3)}
+  .greet-hero .mod-cell.active .lbl{color:var(--ink)}
+  /* corner active indicator dot on the active cell */
+  .greet-hero .mod-cell.active::after{
+    content:"";position:absolute;top:3px;right:3px;width:4px;height:4px;border-radius:50%;
+    background:var(--accent);box-shadow:0 0 6px var(--accent);
+    animation:pulseGreet 2s infinite
+  }
+
+  /* status row */
+  .greet-hero .status-row{
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:#5a5a60;letter-spacing:.06em
+  }
+  .greet-hero .status-row .stat{display:inline-flex;align-items:center;gap:7px}
+  .greet-hero .status-row .stat b{color:var(--ink);font-weight:500}
+  .greet-hero .status-row .stat .d{width:5px;height:5px;border-radius:50%;background:#5a5a60}
+  .greet-hero .status-row .stat .d.live{background:var(--accent-3);box-shadow:0 0 6px var(--accent-3);animation:pulseGreet 2s infinite}
+  .greet-hero .status-row .sep{color:#3a3a42}
+
+  /* ===== Expandable chart modal ===== */
+  .expand-trigger{cursor:pointer;transition:filter .2s ease, transform .2s ease}
+  .expand-trigger:hover{filter:brightness(1.04)}
+  .expand-btn{
+    position:absolute;top:14px;right:14px;z-index:5;
+    width:30px;height:30px;border-radius:8px;
+    display:grid;place-items:center;
+    border:1px solid rgba(199,154,92,.32);
+    background:linear-gradient(180deg, rgba(199,154,92,.18), rgba(199,154,92,.04));
+    color:var(--accent);
+    box-shadow:0 0 16px -4px rgba(199,154,92,.55), inset 0 1px 0 rgba(255,255,255,.08);
+    transition:all .2s ease
+  }
+  .expand-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round}
+  .expand-trigger:hover .expand-btn{
+    background:linear-gradient(180deg, rgba(199,154,92,.28), rgba(199,154,92,.08));
+    box-shadow:0 0 22px -4px rgba(199,154,92,.75), inset 0 1px 0 rgba(255,255,255,.1);
+    transform:translate(0,-1px)
+  }
+
+  .modal-backdrop{
+    position:fixed;inset:0;z-index:1000;
+    background:rgba(8,8,12,.72);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    opacity:0;pointer-events:none;transition:opacity .25s ease;
+    display:grid;place-items:start center;padding:40px 20px;overflow:auto
+  }
+  .modal-backdrop.open{opacity:1;pointer-events:auto}
+
+  .modal-card{
+    width:min(1240px, 100%);
+    background:
+      radial-gradient(60% 100% at 0% 0%, rgba(199,154,92,.20), transparent 55%),
+      radial-gradient(40% 80% at 100% 0%, rgba(111,183,201,.10), transparent 60%),
+      radial-gradient(60% 60% at 70% 130%, rgba(199,154,92,.10), transparent 70%),
+      linear-gradient(180deg, #18171c 0%, #0e0d11 55%, #07070a 100%);
+    border:1px solid rgba(199,154,92,.26);border-radius:18px;
+    box-shadow:
+      0 0 0 1px rgba(199,154,92,.10),
+      0 1px 0 rgba(255,255,255,.10) inset,
+      0 -1px 0 rgba(0,0,0,.55) inset,
+      0 30px 60px -20px rgba(0,0,0,.85),
+      0 80px 140px -50px rgba(0,0,0,1),
+      0 0 220px -30px rgba(199,154,92,.55);
+    padding:30px 36px 32px;position:relative;overflow:hidden;
+    transform:translateY(20px) scale(.97);transition:transform .28s ease;
+    color:var(--ink)
+  }
+  .modal-backdrop.open .modal-card{transform:translateY(0) scale(1)}
+  /* faint grid overlay */
+  .modal-card::before{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:
+      repeating-linear-gradient(0deg,  rgba(255,255,255,.018) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 44px);
+    -webkit-mask-image:radial-gradient(80% 100% at 0% 0%, #000, transparent 75%);
+            mask-image:radial-gradient(80% 100% at 0% 0%, #000, transparent 75%)
+  }
+  .modal-card > *{position:relative;z-index:1}
+  .modal-card .close-x{
+    position:absolute;top:16px;right:16px;z-index:6;
+    width:36px;height:36px;border-radius:9px;
+    border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);
+    display:grid;place-items:center;color:var(--ink-dim);
+    font-family:"Inter",sans-serif;font-size:18px;font-weight:300;cursor:pointer;
+    transition:all .15s
+  }
+  .modal-card .close-x:hover{color:var(--ink);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)}
+  .modal-card .close-x kbd{
+    position:absolute;top:42px;right:0;font-family:"JetBrains Mono",monospace;font-size:9px;
+    color:var(--ink-faint);letter-spacing:.16em;text-transform:uppercase;background:none;border:none
+  }
+
+  /* Modal header */
+  .modal-head{padding-right:50px;margin-bottom:18px}
+  .modal-head .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:10px
+  }
+  .modal-head .kicker .d{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .modal-head h2{
+    font-family:"Caveat",cursive;font-weight:700;font-size:38px;line-height:1;
+    color:var(--ink);margin:0 0 12px;letter-spacing:.3px
+  }
+  .modal-head .figure-row{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+  .modal-head .figure-row .v{
+    font-family:"Caveat",cursive;font-weight:700;font-size:60px;line-height:1;
+    color:var(--accent);letter-spacing:.5px;
+    text-shadow:0 0 36px rgba(199,154,92,.55), 0 0 80px rgba(199,154,92,.25)
+  }
+  .modal-head .figure-row .delta{
+    font-family:"JetBrains Mono",monospace;font-size:12.5px;letter-spacing:.06em;
+    color:var(--accent-3)
+  }
+  .modal-head .figure-row .delta b{color:var(--accent-3);font-weight:600}
+  .modal-head .summary{
+    margin-top:8px;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    color:var(--ink-faint);letter-spacing:.04em
+  }
+  .modal-head .summary b{color:var(--ink-dim);font-weight:500}
+
+  /* Range tabs */
+  .modal-range{
+    display:inline-flex;gap:3px;padding:3px;
+    border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(255,255,255,.02);
+    margin-bottom:14px
+  }
+  .modal-range .opt{
+    padding:7px 14px;border-radius:7px;font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:.08em;color:var(--ink-faint);cursor:default;
+    transition:all .15s
+  }
+  .modal-range .opt:hover{color:var(--ink-dim)}
+  .modal-range .opt.active{
+    background:linear-gradient(180deg, rgba(199,154,92,.22), rgba(199,154,92,.06));
+    color:var(--accent);
+    box-shadow:inset 0 0 0 1px rgba(199,154,92,.35), 0 0 18px -8px rgba(199,154,92,.7)
+  }
+
+  /* Big chart */
+  .modal-chart{
+    height:380px;margin-top:6px;
+    border:1px solid rgba(255,255,255,.04);border-radius:12px;
+    background:
+      radial-gradient(80% 100% at 50% 100%, rgba(199,154,92,.06), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,.012), rgba(0,0,0,.2));
+    padding:18px 18px 8px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04)
+  }
+  .modal-chart svg{width:100%;height:100%;display:block}
+
+  /* KPI grid below chart */
+  .modal-kpi-grid{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:22px;
+    border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);
+    padding:18px 0
+  }
+  .modal-kpi{padding:0 18px}
+  .modal-kpi + .modal-kpi{border-left:1px dashed var(--line)}
+  .modal-kpi:first-child{padding-left:0}
+  .modal-kpi:last-child{padding-right:0}
+  .modal-kpi .lab{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:#5a5a60;margin-bottom:8px
+  }
+  .modal-kpi .val{
+    font-family:"Caveat",cursive;font-weight:700;font-size:30px;line-height:1;
+    color:var(--ink);letter-spacing:.3px
+  }
+  .modal-kpi .val.amber{color:var(--accent);text-shadow:0 0 24px rgba(199,154,92,.5)}
+  .modal-kpi .val.sage {color:var(--accent-3);text-shadow:0 0 22px rgba(141,181,138,.45)}
+  .modal-kpi .val.cyan {color:var(--accent-2);text-shadow:0 0 22px rgba(111,183,201,.45)}
+  .modal-kpi .sub{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.06em;
+    color:var(--ink-faint);margin-top:5px
+  }
+
+  /* Breakdown grid */
+  .modal-break{
+    display:grid;grid-template-columns:1.4fr 1fr;gap:24px;margin-top:22px
+  }
+  .modal-break h3{
+    font-family:"Caveat",cursive;font-weight:700;font-size:22px;margin:0 0 12px;color:var(--ink);letter-spacing:.3px
+  }
+  .modal-break h3 + .lab-row{
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:#5a5a60;margin-bottom:14px
+  }
+
+  .src-list-modal{display:flex;flex-direction:column}
+  .src-row-modal{
+    display:grid;grid-template-columns:36px 1fr 90px;gap:14px;align-items:center;
+    padding:12px 0;border-bottom:1px dashed var(--line)
+  }
+  .src-row-modal:last-child{border-bottom:none}
+  .src-row-modal .logo{
+    width:36px;height:36px;border-radius:9px;border:1px solid var(--line-2);background:#0d0d11;
+    display:grid;place-items:center;color:var(--ink-dim);
+    font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11px;letter-spacing:.04em
+  }
+  .src-row-modal .logo.amber{color:var(--accent);border-color:rgba(199,154,92,.35);background:rgba(199,154,92,.06)}
+  .src-row-modal .logo.cyan {color:var(--accent-2);border-color:rgba(111,183,201,.35);background:rgba(111,183,201,.06)}
+  .src-row-modal .logo.sage {color:var(--accent-3);border-color:rgba(141,181,138,.35);background:rgba(141,181,138,.06)}
+  .src-row-modal .info .nm{font-family:"Inter",sans-serif;font-size:13px;color:var(--ink);font-weight:500;line-height:1.3}
+  .src-row-modal .info .sb{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em}
+  .src-row-modal .info .bar{height:3px;border-radius:3px;background:#15151b;margin-top:7px;overflow:hidden}
+  .src-row-modal .info .bar i{display:block;height:100%;background:linear-gradient(90deg, var(--accent), rgba(199,154,92,.35));border-radius:3px}
+  .src-row-modal .amt{text-align:right;font-family:"JetBrains Mono",monospace;line-height:1.25}
+  .src-row-modal .amt .v{font-size:13px;color:var(--ink);font-weight:500}
+  .src-row-modal .amt .pct{font-size:9.5px;color:var(--accent);margin-top:3px}
+
+  /* Month list */
+  .month-list-modal{display:flex;flex-direction:column;font-family:"JetBrains Mono",monospace}
+  .month-row-modal{
+    display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;
+    padding:9px 0;border-bottom:1px dashed var(--line);font-size:11px
+  }
+  .month-row-modal:last-child{border-bottom:none}
+  .month-row-modal .m{color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;font-size:9.5px}
+  .month-row-modal .bar{height:4px;border-radius:3px;background:#15151b;overflow:hidden;position:relative}
+  .month-row-modal .bar i{display:block;height:100%;background:linear-gradient(90deg, rgba(199,154,92,.6), rgba(199,154,92,.25));border-radius:3px}
+  .month-row-modal .v{color:var(--ink);font-weight:500;font-size:11.5px;letter-spacing:.02em;min-width:64px;text-align:right}
+  .month-row-modal.current .m{color:var(--accent)}
+  .month-row-modal.current .v{color:var(--accent)}
+  .month-row-modal.current .bar i{background:linear-gradient(90deg, var(--accent), rgba(199,154,92,.5));box-shadow:0 0 8px rgba(199,154,92,.5)}
+
+  /* Modal footer */
+  .modal-footer{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:22px;padding-top:14px;border-top:1px dashed var(--line);
+    font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.06em
+  }
+  .modal-footer .mini-btn{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:7px;
+    border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);color:var(--ink-dim);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.05em;cursor:default
+  }
+  .modal-footer .actions-row{display:flex;gap:8px}
+  .modal-footer .mini-btn.primary{
+    background:linear-gradient(180deg, rgba(199,154,92,.22), rgba(199,154,92,.06));
+    border-color:rgba(199,154,92,.4);color:var(--accent);
+    box-shadow:0 0 18px -8px rgba(199,154,92,.7)
+  }
+
+  @media (max-width:900px){
+    .modal-card{padding:24px 22px}
+    .modal-head h2{font-size:30px}
+    .modal-head .figure-row .v{font-size:46px}
+    .modal-chart{height:280px}
+    .modal-kpi-grid{grid-template-columns:repeat(2,1fr);gap:14px 0;border:none;padding:6px 0}
+    .modal-kpi + .modal-kpi{border-left:none}
+    .modal-kpi{padding:12px 16px;border:1px dashed var(--line);border-radius:8px}
+    .modal-break{grid-template-columns:1fr}
+  }
+
+  /* ===== System pulse panel · fills sidebar lower negative space ===== */
+  .sys-pulse{
+    margin-top:auto;padding:11px 12px 12px;border-radius:11px;
+    background:
+      radial-gradient(120% 100% at 100% 0%, rgba(199,154,92,.08), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.005));
+    border:1px solid rgba(255,255,255,.05);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.018),
+      0 1px 0 rgba(255,255,255,.04) inset,
+      0 -1px 0 rgba(0,0,0,.35) inset,
+      0 1px 2px rgba(0,0,0,.4),
+      0 0 30px -16px rgba(199,154,92,.45);
+    display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden
+  }
+  .sys-pulse::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:2px;
+    background:linear-gradient(180deg, transparent, var(--accent-3) 30%, var(--accent-3) 70%, transparent);
+    box-shadow:0 0 8px var(--accent-3);opacity:.7
+  }
+  .sys-pulse .sp-row{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.04em
+  }
+  .sys-pulse .sp-row:first-child{margin-bottom:2px;padding-bottom:7px;border-bottom:1px dashed rgba(255,255,255,.05)}
+  .sys-pulse .sp-lab{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:#5a5a60;font-weight:600}
+  .sys-pulse .sp-state{display:inline-flex;align-items:center;gap:6px;color:var(--accent-3);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
+  .sys-pulse .sp-dot{width:5px;height:5px;border-radius:50%;background:var(--accent-3);box-shadow:0 0 6px var(--accent-3);animation:sp-pulse 2s infinite}
+  @keyframes sp-pulse{0%,100%{opacity:.65}50%{opacity:1}}
+  .sys-pulse .sp-k{color:#6a6a72;text-transform:uppercase;letter-spacing:.14em;font-size:8.5px}
+  .sys-pulse .sp-v{color:var(--ink-dim);font-size:10px}
+  .sys-pulse .sp-v b{color:var(--accent);font-weight:600}
+  .sys-pulse .sp-bars{
+    display:flex;gap:2px;align-items:flex-end;height:14px;margin-top:6px;padding-top:8px;
+    border-top:1px dashed rgba(255,255,255,.05)
+  }
+  .sys-pulse .sp-bars i{
+    flex:1;background:rgba(199,154,92,.4);border-radius:1px;
+    box-shadow:0 0 3px rgba(199,154,92,.4);
+    animation:sp-bar 2.4s ease-in-out infinite
+  }
+  .sys-pulse .sp-bars i:nth-child(1){height:30%;animation-delay:0s}
+  .sys-pulse .sp-bars i:nth-child(2){height:65%;animation-delay:.1s}
+  .sys-pulse .sp-bars i:nth-child(3){height:45%;animation-delay:.2s}
+  .sys-pulse .sp-bars i:nth-child(4){height:80%;animation-delay:.3s}
+  .sys-pulse .sp-bars i:nth-child(5){height:60%;animation-delay:.4s}
+  .sys-pulse .sp-bars i:nth-child(6){height:90%;animation-delay:.5s}
+  .sys-pulse .sp-bars i:nth-child(7){height:55%;animation-delay:.6s}
+  .sys-pulse .sp-bars i:nth-child(8){height:75%;animation-delay:.7s}
+  .sys-pulse .sp-bars i:nth-child(9){height:40%;animation-delay:.8s}
+  .sys-pulse .sp-bars i:nth-child(10){height:70%;animation-delay:.9s}
+  .sys-pulse .sp-bars i:nth-child(11){height:50%;animation-delay:1s}
+  .sys-pulse .sp-bars i:nth-child(12){height:85%;animation-delay:1.1s;background:var(--accent);box-shadow:0 0 6px var(--accent)}
+  @keyframes sp-bar{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}
+
+  /* sidebar with sys-pulse: drop Configuración auto-anchor (panel takes that role) */
+  .sidebar:has(.sys-pulse) > .nav-group:not(:has(~ .nav-group)){margin-top:0;padding-top:0;border-top:none}
+  .sidebar:has(.sys-pulse) > .nav-group:not(:has(~ .nav-group))::before{display:none}
+  .sidebar:has(.sys-pulse) .foot{margin-top:0}
+
+</style>
+</head>
+<body data-density="default">
+
+<div class="page">
+
+  <!-- Top crumbs + title -->
+  <div class="topbar">
+    <div>
+      <div class="crumbs">Personal&nbsp;OS <b>/ Wireframes</b> &nbsp;·&nbsp; Dashboard exploration</div>
+      <h1 class="kicker">Dashboard — 5 boceto-rutas</h1>
+      <div class="sub">Exploración low-fi sobre fondo oscuro. Cada tab propone una arquitectura distinta para el mismo contenido (KPIs financieros, accesos rápidos, actividad y pendientes). Trazos a mano, sin compromiso visual aún — el objetivo es decidir <i>estructura y jerarquía</i> antes de pulir.</div>
+    </div>
+    <div class="legend">
+      <span><span class="dot a"></span> Acento principal</span>
+      <span><span class="dot b"></span> Datos / balance</span>
+      <span><span class="dot c"></span> Positivo / ingresos</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-stage="v5plus"><span class="num">V5+</span>Editorial refinado</button>
+    <button class="tab" data-stage="mobile"><span class="num">M</span>Mobile / PWA</button>
+  </div>
+
+  <!-- ==================== V5+ Editorial refinado ==================== -->
+  <section class="stage active" data-stage="v5plus">
+    <div class="stage-meta">
+      <h2>V5+ · Editorial refinado</h2>
+      <div class="desc">Evolución de V5 manteniendo el tono editorial y la respiración, pero con jerarquía real: <b style="color:var(--accent)">Finanzas</b> domina con gráfico de ingresos, <b style="color:var(--accent-2)">Estudios</b> ocupa el segundo plano, y YouTube/AI/Aprendizaje quedan como banda secundaria. Iconografía monoline propia, glow refinado, pendientes integrados.</div>
+    </div>
+
+    <div class="ab">
+      <span class="ab-tag"><b>Artboard</b> · 1440 × 1100 · desktop · refined</span>
+      <div class="frame" style="min-height:1080px">
+
+        <!-- Sidebar with icons -->
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="logo">◆</div>
+            <div class="name">Personal OS<small>v0.1 · local</small></div>
+          </div>
+          <div class="nav-group">
+            <div class="label">Sistema</div>
+            <div class="nav-item active">
+              <svg class="ico" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+              Dashboard
+            </div>
+            <div class="nav-item">
+              <svg class="ico" viewBox="0 0 16 16"><path d="M2 12 L6 8 L9 10 L14 4"/><path d="M10.5 4 L14 4 L14 7.5"/></svg>
+              Finanzas
+            </div>
+            <div class="nav-item">
+              <svg class="ico" viewBox="0 0 16 16"><path d="M2 3.5 L8 5 L14 3.5 L14 13 L8 14.5 L2 13 Z"/><path d="M8 5 L8 14.5"/></svg>
+              Estudios
+            </div>
+            <div class="nav-item">
+              <svg class="ico" viewBox="0 0 16 16"><rect x="2" y="3.5" width="12" height="9" rx="2"/><path d="M7 6.5 L10.5 8 L7 9.5 Z" fill="currentColor" stroke="none"/></svg>
+              YouTube
+            </div>
+          </div>
+          <div class="nav-group">
+            <div class="label">Inteligencia</div>
+            <div class="nav-item">
+              <svg class="ico" viewBox="0 0 16 16"><path d="M8 1.5 L9.2 6.8 L14.5 8 L9.2 9.2 L8 14.5 L6.8 9.2 L1.5 8 L6.8 6.8 Z"/></svg>
+              AI
+            </div>
+            <div class="nav-item">
+              <svg class="ico" viewBox="0 0 16 16"><path d="M1.5 6 L8 3 L14.5 6 L8 9 Z"/><path d="M4 7.5 L4 11 C4 11 5.5 12.5 8 12.5 C10.5 12.5 12 11 12 11 L12 7.5"/><path d="M14.5 6 L14.5 9.5"/></svg>
+              Aprendizaje
+            </div>
+          </div>
+          <div class="nav-group">
+            <div class="label">Sistema</div>
+            <div class="nav-item">
+              <svg class="ico" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.4"/><path d="M8 1 L8 3 M8 13 L8 15 M1 8 L3 8 M13 8 L15 8 M3.2 3.2 L4.6 4.6 M11.4 11.4 L12.8 12.8 M3.2 12.8 L4.6 11.4 M11.4 4.6 L12.8 3.2"/></svg>
+              Configuración
+            </div>
+          </div>
+          <!-- system pulse · fills the lower negative space with intent -->
+          <div class="sys-pulse">
+            <div class="sp-row">
+              <span class="sp-lab">SYSTEM</span>
+              <span class="sp-state"><span class="sp-dot"></span>ONLINE</span>
+            </div>
+            <div class="sp-row">
+              <span class="sp-k">sync</span><span class="sp-v">09:42</span>
+            </div>
+            <div class="sp-row">
+              <span class="sp-k">módulos</span><span class="sp-v"><b>7</b>/7</span>
+            </div>
+            <div class="sp-row">
+              <span class="sp-k">uptime</span><span class="sp-v">04h 12m</span>
+            </div>
+            <div class="sp-bars" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+
+          <div class="foot">
+            <div class="avatar"></div>
+            <div>
+              <div class="scribble sm">tú</div>
+              <div class="mono" style="font-size:9px">operator · local</div>
+            </div>
+          </div>
+        </aside>
+
+        <div class="main">
+          <!-- Header -->
+          <div class="header">
+            <div class="left">
+              <div class="mono">Dashboard <span style="color:var(--ink-faint)">/ overview</span></div>
+              <span class="pill"><span class="d"></span>sistema online · sync 09:42</span>
+            </div>
+            <div class="left">
+              <div class="search">⌕ buscar módulos, archivos, notas…<span class="k">⌘K</span></div>
+              <div class="iconbtn">
+                <svg class="ico" viewBox="0 0 16 16" style="width:13px;height:13px"><path d="M3 7 L8 12 L13 7"/></svg>
+              </div>
+              <div class="iconbtn">◐</div>
+            </div>
+          </div>
+
+          <!-- Greeting hero · premium -->
+          <div class="sk premium greet-hero" style="position:relative">
+            <div class="accent-bar"></div>
+            <div class="deco-sun"></div>
+            <div class="deco-rings"></div>
+            <div class="horizon"></div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap">
+              <div style="flex:1;min-width:0">
+                <div class="live-kicker">
+                  <span class="live"></span>
+                  <b>SYSTEM ACTIVE</b>
+                  <span class="sep">·</span>
+                  <span class="v">09:42:18 · local</span>
+                </div>
+
+                <h2 class="hero-mega"><span class="accent-word">LIVE</span> OVERVIEW</h2>
+
+                <div class="modules-pulse">
+                  <div class="mod-cell active"><span class="bars"><i></i><i></i><i></i></span><span class="lbl">DSH</span></div>
+                  <div class="mod-cell amber"><span class="bars"><i></i><i></i><i></i></span><span class="lbl">FIN</span></div>
+                  <div class="mod-cell cyan"><span class="bars"><i></i><i></i><i></i></span><span class="lbl">EST</span></div>
+                  <div class="mod-cell amber"><span class="bars"><i></i><i></i><i></i></span><span class="lbl">YT</span></div>
+                  <div class="mod-cell cyan"><span class="bars"><i></i><i></i><i></i></span><span class="lbl">AI</span></div>
+                  <div class="mod-cell sage"><span class="bars"><i></i><i></i><i></i></span><span class="lbl">APR</span></div>
+                  <div class="mod-cell"><span class="bars"><i></i><i></i><i></i></span><span class="lbl">CFG</span></div>
+                </div>
+
+                <div class="status-row">
+                  <span class="stat"><span class="d live"></span><b>7</b> módulos online</span>
+                  <span class="sep">·</span>
+                  <span class="stat"><b>3</b> tareas pendientes</span>
+                  <span class="sep">·</span>
+                  <span class="stat"><b>4</b> piezas activas</span>
+                  <span class="sep">·</span>
+                  <span class="stat">sync <b>09:42</b></span>
+                </div>
+              </div>
+
+              <div class="actions">
+                <div class="chip-action amber">
+                  <span class="ic">!</span>
+                  <span>Cerrar conciliación abril</span>
+                  <span class="arr">→</span>
+                </div>
+                <div class="chip-action cyan">
+                  <span class="ic">⌖</span>
+                  <span>Continuar lección 4</span>
+                  <span class="arr">→</span>
+                </div>
+                <div class="chip-action dashed">
+                  <span class="ic">+</span>
+                  <span>Foco del día</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =================== FINANZAS (módulo principal) =================== -->
+          <div>
+            <div class="sect-title" style="margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div class="icobox amber">
+                  <svg class="ico lg" viewBox="0 0 16 16"><path d="M2 12 L6 8 L9 10 L14 4"/><path d="M10.5 4 L14 4 L14 7.5"/></svg>
+                </div>
+                <div>
+                  <div class="label">Módulo · 01 · principal</div>
+                  <h3 style="font-size:30px;margin-top:2px">Finanzas</h3>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px">
+                <div class="meta">mayo 2026 · 3 cuentas · 27 movimientos</div>
+                <div class="mono" style="color:var(--accent);font-size:11px">abrir módulo →</div>
+              </div>
+            </div>
+
+            <!-- Big chart + right rail -->
+            <div class="row" style="grid-template-columns:1.9fr 1fr;gap:14px">
+
+              <!-- Income chart card -->
+              <div class="sk premium feature expand-trigger" onclick="openIncomeModal()" style="padding:24px 26px;display:flex;flex-direction:column;position:relative;overflow:hidden">
+                <button class="expand-btn" title="Expandir" aria-label="Expandir gráfico" onclick="event.stopPropagation();openIncomeModal()">
+                  <svg viewBox="0 0 16 16"><path d="M3 7 L3 3 L7 3 M13 9 L13 13 L9 13 M3 3 L7 7 M13 13 L9 9"/></svg>
+                </button>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <div class="label">Evolución de ingresos · últimos 12 meses</div>
+                    <div style="display:flex;align-items:baseline;gap:14px;margin-top:8px">
+                      <div class="scribble" style="font-size:54px;color:var(--accent);line-height:1">$ 8,420</div>
+                      <div class="mono" style="color:var(--accent-3);font-size:12px"><b>+12.4%</b> vs abril</div>
+                    </div>
+                    <div class="mono" style="color:var(--ink-faint);font-size:10px;margin-top:6px">promedio mensual: $ 6,840 · mejor mes: feb · $ 9,210</div>
+                  </div>
+                  <div style="display:flex;gap:4px">
+                    <div class="pill" style="font-size:9px;padding:3px 8px;border-color:var(--line-2);color:var(--ink-dim)">6M</div>
+                    <div class="pill" style="font-size:9px;padding:3px 8px;border-color:var(--accent);color:var(--accent);background:rgba(199,154,92,.06)">12M</div>
+                    <div class="pill" style="font-size:9px;padding:3px 8px;border-color:var(--line-2);color:var(--ink-dim)">YTD</div>
+                  </div>
+                </div>
+
+                <!-- The chart -->
+                <div style="margin-top:22px;position:relative;height:260px">
+                  <svg viewBox="0 0 720 260" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+                    <defs>
+                      <linearGradient id="incArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="rgba(199,154,92,.45)"/>
+                        <stop offset="1" stop-color="rgba(199,154,92,0)"/>
+                      </linearGradient>
+                      <linearGradient id="incLine" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="rgba(199,154,92,.6)"/>
+                        <stop offset="1" stop-color="rgba(199,154,92,1)"/>
+                      </linearGradient>
+                      <filter id="incGlow"><feGaussianBlur stdDeviation="3"/></filter>
+                    </defs>
+
+                    <!-- gridlines -->
+                    <g stroke="rgba(255,255,255,.04)" stroke-dasharray="2 4">
+                      <line x1="0" y1="50"  x2="720" y2="50"/>
+                      <line x1="0" y1="110" x2="720" y2="110"/>
+                      <line x1="0" y1="170" x2="720" y2="170"/>
+                      <line x1="0" y1="220" x2="720" y2="220"/>
+                    </g>
+
+                    <!-- y-axis labels -->
+                    <g font-family="JetBrains Mono" font-size="9" fill="#4a4a50">
+                      <text x="0" y="48">10k</text>
+                      <text x="0" y="108">8k</text>
+                      <text x="0" y="168">6k</text>
+                      <text x="0" y="218">4k</text>
+                    </g>
+
+                    <!-- area + line: 12 monthly points -->
+                    <path d="M30,180 L90,165 L150,150 L210,120 L270,40 L330,90 L390,110 L450,95 L510,80 L570,70 L630,60 L690,55 L690,260 L30,260 Z"
+                          fill="url(#incArea)"/>
+                    <!-- glow under line -->
+                    <path d="M30,180 L90,165 L150,150 L210,120 L270,40 L330,90 L390,110 L450,95 L510,80 L570,70 L630,60 L690,55"
+                          stroke="rgba(199,154,92,.55)" stroke-width="3" fill="none" filter="url(#incGlow)" opacity=".7"/>
+                    <path d="M30,180 L90,165 L150,150 L210,120 L270,40 L330,90 L390,110 L450,95 L510,80 L570,70 L630,60 L690,55"
+                          stroke="url(#incLine)" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+
+                    <!-- current month marker -->
+                    <g>
+                      <line x1="690" y1="55" x2="690" y2="240" stroke="rgba(199,154,92,.25)" stroke-dasharray="2 3"/>
+                      <circle cx="690" cy="55" r="4" fill="#0a0a0c" stroke="var(--accent)" stroke-width="1.6"/>
+                      <circle cx="690" cy="55" r="9" fill="none" stroke="rgba(199,154,92,.3)"/>
+                    </g>
+
+                    <!-- x-axis labels -->
+                    <g font-family="JetBrains Mono" font-size="9" fill="#4a4a50">
+                      <text x="22"  y="252">jun</text>
+                      <text x="82"  y="252">jul</text>
+                      <text x="142" y="252">ago</text>
+                      <text x="202" y="252">sep</text>
+                      <text x="262" y="252">oct</text>
+                      <text x="322" y="252">nov</text>
+                      <text x="382" y="252">dic</text>
+                      <text x="442" y="252">ene</text>
+                      <text x="502" y="252">feb</text>
+                      <text x="562" y="252">mar</text>
+                      <text x="622" y="252">abr</text>
+                      <text x="678" y="252" fill="#c79a5c">may</text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Right rail: KPIs stacked -->
+              <div class="stack">
+                <div class="sk premium" style="padding:18px 20px">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div class="label">Gastos · mes</div>
+                    <svg class="ico" viewBox="0 0 16 16" style="color:var(--accent);opacity:.7"><path d="M2 4 L6 8 L9 6 L14 12"/><path d="M10.5 12 L14 12 L14 8.5"/></svg>
+                  </div>
+                  <div class="scribble" style="font-size:36px;color:var(--accent);margin-top:6px;line-height:1">$ 3,217</div>
+                  <div class="mono" style="color:var(--ink-faint);font-size:10px;margin-top:6px"><span style="color:var(--accent-3)">−4.1%</span> · 27 movimientos</div>
+                  <div class="chart" style="height:32px;margin-top:8px">
+                    <svg viewBox="0 0 200 32" preserveAspectRatio="none"><path d="M0,12 C30,20 50,8 80,22 S140,28 200,16" stroke="rgba(199,154,92,.6)" fill="none" stroke-width="1.2"/></svg>
+                  </div>
+                </div>
+
+                <div class="sk premium feature cyan" style="padding:18px 20px">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div class="label">Balance general</div>
+                    <svg class="ico" viewBox="0 0 16 16" style="color:var(--accent-2);opacity:.7"><circle cx="8" cy="8" r="5.5"/><path d="M5 8 L11 8 M8 5 L8 11"/></svg>
+                  </div>
+                  <div class="scribble" style="font-size:36px;color:var(--accent-2);margin-top:6px;line-height:1">+ $ 5,203</div>
+                  <div class="mono" style="color:var(--ink-faint);font-size:10px;margin-top:6px">runway estimado · <b style="color:var(--ink-dim)">~ 7 meses</b></div>
+                  <div class="prog" style="margin-top:10px"><i style="width:64%"></i></div>
+                  <div class="mono" style="color:var(--ink-faint);font-size:9px;margin-top:4px">64% del objetivo anual</div>
+                </div>
+
+                <div class="sk premium" style="padding:14px 20px">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                      <div class="label">Próximos cobros</div>
+                      <div class="mono" style="color:var(--ink-dim);font-size:11px;margin-top:4px">3 facturas · 7 días</div>
+                    </div>
+                    <div class="scribble" style="font-size:24px;color:var(--accent-3)">$ 2,140</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Finanzas sub-row: fuentes + movimientos -->
+            <div class="row" style="grid-template-columns:1fr 1.4fr;gap:14px;margin-top:14px">
+              <div class="sk premium" style="padding:18px 20px">
+                <div class="sect-title" style="margin-bottom:14px">
+                  <h3 style="font-size:18px">Fuentes de ingreso</h3>
+                  <div class="meta">may · 4</div>
+                </div>
+                <div class="stack" style="gap:14px">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);margin-bottom:5px">
+                      <span>Cliente B · consultoría</span><span style="color:var(--ink)">$ 3,800 · 45%</span>
+                    </div>
+                    <div class="prog amber"><i style="width:45%"></i></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);margin-bottom:5px">
+                      <span>Cliente A · retainer</span><span style="color:var(--ink)">$ 2,400 · 28%</span>
+                    </div>
+                    <div class="prog amber"><i style="width:28%"></i></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);margin-bottom:5px">
+                      <span>YouTube · adsense</span><span style="color:var(--ink)">$ 1,620 · 19%</span>
+                    </div>
+                    <div class="prog amber"><i style="width:19%"></i></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);margin-bottom:5px">
+                      <span>Proyectos sueltos</span><span style="color:var(--ink)">$ 600 · 8%</span>
+                    </div>
+                    <div class="prog amber"><i style="width:8%"></i></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sk premium" style="padding:18px 20px">
+                <div class="sect-title" style="margin-bottom:6px">
+                  <h3 style="font-size:18px">Movimientos recientes</h3>
+                  <div class="meta">últimos 5 · ver todos →</div>
+                </div>
+                <div class="act"><div class="icobox sm sage"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M8 12 L8 4 M4 8 L8 4 L12 8"/></svg></div><div class="body"><div class="l1">+ $ 1,200 · cliente B</div><div class="l2">consultoría · transferencia</div></div><div class="time">hoy 09:14</div></div>
+                <div class="act"><div class="icobox sm amber"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M8 4 L8 12 M4 8 L8 12 L12 8"/></svg></div><div class="body"><div class="l1">− $ 89.40 · mercado central</div><div class="l2">despensa · tarjeta</div></div><div class="time">hoy 11:02</div></div>
+                <div class="act"><div class="icobox sm amber"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M8 4 L8 12 M4 8 L8 12 L12 8"/></svg></div><div class="body"><div class="l1">− $ 18.99 · suscripción AI</div><div class="l2">herramientas · auto</div></div><div class="time">ayer</div></div>
+                <div class="act"><div class="icobox sm sage"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M8 12 L8 4 M4 8 L8 4 L12 8"/></svg></div><div class="body"><div class="l1">+ $ 420 · adsense</div><div class="l2">YouTube · pago mensual</div></div><div class="time">2d</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =================== ESTUDIOS (módulo 02) =================== -->
+          <div>
+            <div class="sect-title" style="margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div class="icobox cyan">
+                  <svg class="ico lg" viewBox="0 0 16 16"><path d="M2 3.5 L8 5 L14 3.5 L14 13 L8 14.5 L2 13 Z"/><path d="M8 5 L8 14.5"/></svg>
+                </div>
+                <div>
+                  <div class="label">Módulo · 02 · secundario</div>
+                  <h3 style="font-size:26px;margin-top:2px">Estudios</h3>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px">
+                <div class="meta">2 cursos · 14 notas · 6 h esta semana</div>
+                <div class="mono" style="color:var(--accent-2);font-size:11px">abrir módulo →</div>
+              </div>
+            </div>
+
+            <div class="row" style="grid-template-columns:1.5fr 1fr;gap:14px">
+              <div class="sk premium" style="padding:18px 22px">
+                <div class="sect-title" style="margin-bottom:14px">
+                  <h3 style="font-size:17px">Próximas evaluaciones</h3>
+                  <div class="meta">3 próximas</div>
+                </div>
+                <div style="display:flex;flex-direction:column">
+
+                  <div style="display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;padding:10px 2px;border-bottom:1px dashed var(--line)">
+                    <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--accent);padding:5px 4px;border:1px solid rgba(199,154,92,.4);background:rgba(199,154,92,.08);border-radius:7px;line-height:1.15">vie<br/><b style="color:var(--accent);font-weight:600;font-size:13px">23</b></div>
+                    <div>
+                      <div style="font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3">Parcial 01</div>
+                      <div class="mono" style="font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em">Big Data</div>
+                    </div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--accent)">en 4 días</div>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;padding:10px 2px;border-bottom:1px dashed var(--line)">
+                    <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--ink-dim);padding:5px 4px;border:1px dashed var(--line-2);border-radius:7px;line-height:1.15">lun<br/><b style="color:var(--ink);font-weight:600;font-size:13px">26</b></div>
+                    <div>
+                      <div style="font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3">Parcial 01</div>
+                      <div class="mono" style="font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em">Gestión Ágil</div>
+                    </div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--ink-dim)">en 1 sem</div>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;padding:10px 2px">
+                    <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--ink-dim);padding:5px 4px;border:1px dashed var(--line-2);border-radius:7px;line-height:1.15">jue<br/><b style="color:var(--ink);font-weight:600;font-size:13px">05</b></div>
+                    <div>
+                      <div style="font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3">Defensa proyecto</div>
+                      <div class="mono" style="font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em">Minería de Datos</div>
+                    </div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--ink-dim)">en 17 días</div>
+                  </div>
+
+                </div>
+
+                <div class="sect-title" style="margin-top:18px;margin-bottom:6px;padding-top:14px;border-top:1px dashed var(--line)">
+                  <h3 style="font-size:17px">Trabajos en curso</h3>
+                  <div class="meta">3 activos</div>
+                </div>
+                <div style="display:flex;flex-direction:column">
+
+                  <div style="display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;padding:10px 2px;border-bottom:1px dashed var(--line)">
+                    <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--accent);padding:5px 4px;border:1px solid rgba(199,154,92,.4);background:rgba(199,154,92,.08);border-radius:7px;line-height:1.15">jue<br/><b style="color:var(--accent);font-weight:600;font-size:13px">22</b></div>
+                    <div>
+                      <div style="font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3">Trabajo 02 · Spark pipelines</div>
+                      <div class="mono" style="font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em">Big Data</div>
+                    </div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:rgba(199,154,92,.08);border:1px solid rgba(199,154,92,.3);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--accent)"><span style="width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent)"></span>en curso</div>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;padding:10px 2px;border-bottom:1px dashed var(--line)">
+                    <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--ink-dim);padding:5px 4px;border:1px dashed var(--line-2);border-radius:7px;line-height:1.15">lun<br/><b style="color:var(--ink);font-weight:600;font-size:13px">26</b></div>
+                    <div>
+                      <div style="font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3">Caso scrum · sprint review</div>
+                      <div class="mono" style="font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em">Gestión Ágil</div>
+                    </div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.025);border:1px solid var(--line-2);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--ink-dim)"><span style="width:5px;height:5px;border-radius:50%;background:var(--ink-faint)"></span>pendiente</div>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;padding:10px 2px">
+                    <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--ink-dim);padding:5px 4px;border:1px dashed var(--line-2);border-radius:7px;line-height:1.15">mié<br/><b style="color:var(--ink);font-weight:600;font-size:13px">28</b></div>
+                    <div>
+                      <div style="font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.3">Notebook k-means</div>
+                      <div class="mono" style="font-size:10px;color:var(--ink-faint);margin-top:3px;letter-spacing:.04em">Minería de Datos</div>
+                    </div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:rgba(141,181,138,.06);border:1px solid rgba(141,181,138,.3);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--accent-3)"><span style="width:5px;height:5px;border-radius:50%;background:var(--accent-3);box-shadow:0 0 6px var(--accent-3)"></span>en curso</div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="sk premium" style="padding:18px 22px">
+                <div class="sect-title" style="margin-bottom:6px">
+                  <h3 style="font-size:17px">Archivos recientes</h3>
+                  <div class="meta">últimos 4</div>
+                </div>
+                <div class="act"><div class="icobox sm" style="color:var(--accent-2)"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 2 L10 2 L13 5 L13 14 L3 14 Z"/><path d="M10 2 L10 5 L13 5"/></svg></div><div class="body"><div class="l1">frameworks-inversion.pdf</div><div class="l2">Estudios / Inversión · 2.4 MB</div></div><div class="time">14 min</div></div>
+                <div class="act"><div class="icobox sm" style="color:var(--accent)"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><rect x="3" y="3" width="10" height="10" rx="1"/><path d="M3 7 L13 7"/></svg></div><div class="body"><div class="l1">sistemas-modulares.pptx</div><div class="l2">Estudios / Diseño · 8.1 MB</div></div><div class="time">hoy</div></div>
+                <div class="act"><div class="icobox sm"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 2 L13 2 L13 14 L3 14 Z"/><path d="M5 6 L11 6 M5 9 L11 9 M5 12 L8 12"/></svg></div><div class="body"><div class="l1">apuntes-leccion-4.md</div><div class="l2">Estudios / Diseño · 6 KB</div></div><div class="time">ayer</div></div>
+                <div class="act"><div class="icobox sm" style="color:var(--accent-2)"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px"><path d="M3 2 L10 2 L13 5 L13 14 L3 14 Z"/><path d="M10 2 L10 5 L13 5"/></svg></div><div class="body"><div class="l1">escritura-clara.pdf</div><div class="l2">Estudios / Escritura · 1.8 MB</div></div><div class="time">2d</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =================== En curso (workspaces activos) =================== -->
+          <div>
+            <div class="sect-title" style="margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <svg class="ico" viewBox="0 0 16 16" style="color:var(--ink-dim)"><circle cx="8" cy="8" r="2.2"/><circle cx="8" cy="8" r="6"/></svg>
+                <h3 style="font-size:20px">En curso</h3>
+              </div>
+              <div class="meta">3 áreas secundarias · actividad de los últimos 7 días</div>
+            </div>
+
+            <div class="sk premium" style="padding:6px 22px">
+
+              <!-- YouTube -->
+              <div class="ws-row amber">
+                <div class="stripe"></div>
+                <div class="who">
+                  <div class="icobox sm amber" style="width:30px;height:30px">
+                    <svg class="ico" viewBox="0 0 16 16" style="width:13px;height:13px"><rect x="2" y="3.5" width="12" height="9" rx="2"/><path d="M7 6.5 L10.5 8 L7 9.5 Z" fill="currentColor" stroke="none"/></svg>
+                  </div>
+                  <div style="min-width:0">
+                    <div class="ttl" style="color:var(--accent)">YouTube</div>
+                    <div class="sub">guión activo · canal personal</div>
+                  </div>
+                </div>
+                <div class="body">
+                  <div class="lead">"Episodio 03 — Sistemas modulares para crecer sin caos"</div>
+                  <div class="meta-line"><b>60%</b> redactado · grabación programada <b>viernes 22</b> · última edición hace 3h</div>
+                </div>
+                <div class="actions">
+                  <div class="act-chip primary">continuar guión <span class="arr">→</span></div>
+                  <div class="act-chip">ideas <span class="more">5</span></div>
+                  <div class="act-chip">archivos</div>
+                  <div class="more">···</div>
+                </div>
+              </div>
+
+              <!-- AI -->
+              <div class="ws-row cyan">
+                <div class="stripe"></div>
+                <div class="who">
+                  <div class="icobox sm cyan" style="width:30px;height:30px">
+                    <svg class="ico" viewBox="0 0 16 16" style="width:13px;height:13px"><path d="M8 1.5 L9.2 6.8 L14.5 8 L9.2 9.2 L8 14.5 L6.8 9.2 L1.5 8 L6.8 6.8 Z"/></svg>
+                  </div>
+                  <div style="min-width:0">
+                    <div class="ttl" style="color:var(--accent-2)">AI</div>
+                    <div class="sub">sesión abierta · claude</div>
+                  </div>
+                </div>
+                <div class="body">
+                  <div class="lead">"Refactor del dashboard — separar Finanzas como módulo principal"</div>
+                  <div class="meta-line"><b>12 mensajes</b> · última respuesta hace 8 min · <span style="color:var(--accent-2)">●</span> contexto cargado: dashboard, finanzas</div>
+                </div>
+                <div class="actions">
+                  <div class="act-chip primary">reanudar chat <span class="arr">→</span></div>
+                  <div class="act-chip">claude</div>
+                  <div class="act-chip">codex</div>
+                  <div class="act-chip">+ nuevo</div>
+                </div>
+              </div>
+
+              <!-- Aprendizaje -->
+              <div class="ws-row sage">
+                <div class="stripe"></div>
+                <div class="who">
+                  <div class="icobox sm sage" style="width:30px;height:30px">
+                    <svg class="ico" viewBox="0 0 16 16" style="width:13px;height:13px"><path d="M1.5 6 L8 3 L14.5 6 L8 9 Z"/><path d="M4 7.5 L4 11 C4 11 5.5 12.5 8 12.5 C10.5 12.5 12 11 12 11 L12 7.5"/></svg>
+                  </div>
+                  <div style="min-width:0">
+                    <div class="ttl" style="color:var(--accent-3)">Aprendizaje</div>
+                    <div class="sub">tema actual · nota en proceso</div>
+                  </div>
+                </div>
+                <div class="body">
+                  <div class="lead">"Frameworks de decisión bajo incertidumbre"</div>
+                  <div class="meta-line">nota nueva ayer · próximo paso: <b>escribir resumen propio</b> · racha 12 días</div>
+                </div>
+                <div class="actions">
+                  <div class="act-chip primary">abrir nota <span class="arr">→</span></div>
+                  <div class="act-chip">siguiente paso</div>
+                  <div class="act-chip">todas las notas</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- =================== Pendientes (slim row) =================== -->
+          <div class="sk premium" style="padding:18px 22px">
+            <div class="sect-title" style="margin-bottom:6px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <svg class="ico" viewBox="0 0 16 16" style="color:var(--ink-dim)"><rect x="2.5" y="2.5" width="11" height="11" rx="2"/><path d="M5 8 L7 10 L11 6"/></svg>
+                <h3 style="font-size:18px">Pendientes del día</h3>
+              </div>
+              <div class="meta">04 abiertos · 1 alta</div>
+            </div>
+            <div class="row row-2" style="gap:0 24px">
+              <div>
+                <div class="task"><div class="check"></div><div class="body"><div class="l1">Cerrar conciliación abril</div><div class="l2">Finanzas · vence hoy</div></div><div class="tag-prio hi">alta</div></div>
+                <div class="task"><div class="check"></div><div class="body"><div class="l1">Lección 4 — Diseño de sistemas</div><div class="l2">Estudios</div></div><div class="meta">vie</div></div>
+              </div>
+              <div>
+                <div class="task"><div class="check"></div><div class="body"><div class="l1">Grabar intro episodio 03</div><div class="l2">YouTube</div></div><div class="meta">sáb</div></div>
+                <div class="task done"><div class="check"></div><div class="body"><div class="l1">Backup base de datos local</div><div class="l2">Sistema</div></div><div class="meta">ok</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="note">YouTube/AI/Aprendizaje ya no son tarjetas simétricas: son <b>workspaces activos</b> en un panel único, leídos como filas editoriales. Cada fila responde "¿qué tengo abierto aquí ahora mismo?" con un item concreto + acciones reales — los módulos quedan subordinados a Finanzas/Estudios pero ganan utilidad práctica.</div>
+
+    <!-- ============ Income expand modal (lives inside V5+ so it's only available when V5+ is shown) ============ -->
+    <div class="modal-backdrop" id="incomeModal" onclick="if(event.target===this)closeIncomeModal()">
+      <div class="modal-card" role="dialog" aria-label="Evolución de ingresos · vista expandida">
+        <button class="close-x" onclick="closeIncomeModal()" aria-label="Cerrar">×<kbd>Esc</kbd></button>
+
+        <!-- Header -->
+        <div class="modal-head">
+          <div class="kicker"><span class="d"></span>Finanzas · módulo 01 · ingresos</div>
+          <h2>Evolución de ingresos</h2>
+          <div class="figure-row">
+            <div class="v">$ 8,420</div>
+            <div class="delta"><b>▲ 12.4%</b> vs abril</div>
+            <div class="delta" style="color:var(--ink-dim)">·</div>
+            <div class="delta" style="color:var(--ink-dim)"><b style="color:var(--ink)">acumulado 12 m</b> · $ 82,080</div>
+          </div>
+          <div class="summary">
+            promedio mensual <b>$ 6,840</b> · mejor mes <b>feb · $ 9,210</b> · proyectado junio <b>$ 8,900 (+5.7%)</b>
+          </div>
+        </div>
+
+        <!-- Range tabs -->
+        <div class="modal-range">
+          <span class="opt">3M</span>
+          <span class="opt">6M</span>
+          <span class="opt active">12M</span>
+          <span class="opt">24M</span>
+          <span class="opt">YTD</span>
+          <span class="opt">ALL</span>
+        </div>
+
+        <!-- Big chart -->
+        <div class="modal-chart">
+          <svg viewBox="0 0 1200 350" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="modalIncArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(199,154,92,.5)"/>
+                <stop offset="1" stop-color="rgba(199,154,92,0)"/>
+              </linearGradient>
+              <filter id="modalGlow"><feGaussianBlur stdDeviation="4"/></filter>
+            </defs>
+
+            <!-- gridlines -->
+            <g stroke="rgba(255,255,255,.04)" stroke-dasharray="2 4">
+              <line x1="50" y1="40"  x2="1170" y2="40"/>
+              <line x1="50" y1="110" x2="1170" y2="110"/>
+              <line x1="50" y1="180" x2="1170" y2="180"/>
+              <line x1="50" y1="250" x2="1170" y2="250"/>
+            </g>
+            <!-- y labels -->
+            <g font-family="JetBrains Mono" font-size="10" fill="#5a5a60">
+              <text x="0" y="44">$ 10k</text>
+              <text x="0" y="114">$ 8k</text>
+              <text x="0" y="184">$ 6k</text>
+              <text x="0" y="254">$ 4k</text>
+            </g>
+
+            <!-- area -->
+            <path d="M65,220 L155,200 L245,180 L335,140 L425,40 L515,90 L605,110 L695,95 L785,80 L875,70 L965,60 L1055,55 L1145,50 L1145,300 L65,300 Z"
+                  fill="url(#modalIncArea)"/>
+            <!-- glow back of line -->
+            <path d="M65,220 L155,200 L245,180 L335,140 L425,40 L515,90 L605,110 L695,95 L785,80 L875,70 L965,60 L1055,55 L1145,50"
+                  stroke="rgba(199,154,92,.5)" stroke-width="6" fill="none" filter="url(#modalGlow)" opacity=".7"/>
+            <!-- line -->
+            <path d="M65,220 L155,200 L245,180 L335,140 L425,40 L515,90 L605,110 L695,95 L785,80 L875,70 L965,60 L1055,55 L1145,50"
+                  stroke="var(--accent)" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+            <!-- markers -->
+            <g fill="#0a0a0c" stroke="var(--accent)" stroke-width="1.6">
+              <circle cx="65"   cy="220" r="3"/>
+              <circle cx="155"  cy="200" r="3"/>
+              <circle cx="245"  cy="180" r="3"/>
+              <circle cx="335"  cy="140" r="3"/>
+              <circle cx="425"  cy="40"  r="3"/>
+              <circle cx="515"  cy="90"  r="3"/>
+              <circle cx="605"  cy="110" r="3"/>
+              <circle cx="695"  cy="95"  r="3"/>
+              <circle cx="785"  cy="80"  r="3"/>
+              <circle cx="875"  cy="70"  r="3"/>
+              <circle cx="965"  cy="60"  r="3"/>
+              <circle cx="1055" cy="55"  r="3"/>
+            </g>
+
+            <!-- best month annotation (feb) -->
+            <g>
+              <line x1="425" y1="40" x2="425" y2="280" stroke="rgba(199,154,92,.18)" stroke-dasharray="2 3"/>
+              <text x="430" y="32" font-family="JetBrains Mono" font-size="9.5" fill="#c79a5c">feb · pico $ 9,210</text>
+            </g>
+
+            <!-- current month -->
+            <g>
+              <line x1="1145" y1="50" x2="1145" y2="280" stroke="rgba(199,154,92,.4)" stroke-dasharray="2 3"/>
+              <circle cx="1145" cy="50" r="6" fill="#0a0a0c" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="1145" cy="50" r="14" fill="none" stroke="rgba(199,154,92,.3)"/>
+              <circle cx="1145" cy="50" r="22" fill="none" stroke="rgba(199,154,92,.12)"/>
+              <text x="1160" y="40" font-family="JetBrains Mono" font-size="11" fill="#c79a5c" font-weight="bold">$ 8,420</text>
+              <text x="1160" y="54" font-family="JetBrains Mono" font-size="9" fill="#8a8a8f">mayo · ahora</text>
+            </g>
+
+            <!-- projection ghost for june -->
+            <g stroke="rgba(199,154,92,.4)" stroke-width="1.4" stroke-dasharray="4 4" fill="none">
+              <path d="M1145,50 L1180,42"/>
+            </g>
+
+            <!-- x labels -->
+            <g font-family="JetBrains Mono" font-size="10" fill="#5a5a60">
+              <text x="55"   y="320">jun</text>
+              <text x="145"  y="320">jul</text>
+              <text x="235"  y="320">ago</text>
+              <text x="325"  y="320">sep</text>
+              <text x="415"  y="320">oct</text>
+              <text x="505"  y="320">nov</text>
+              <text x="595"  y="320">dic</text>
+              <text x="685"  y="320">ene</text>
+              <text x="775"  y="320">feb</text>
+              <text x="865"  y="320">mar</text>
+              <text x="955"  y="320">abr</text>
+              <text x="1138" y="320" fill="#c79a5c">may</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- KPI row -->
+        <div class="modal-kpi-grid">
+          <div class="modal-kpi">
+            <div class="lab">Promedio</div>
+            <div class="val">$ 6,840</div>
+            <div class="sub">por mes · 12m</div>
+          </div>
+          <div class="modal-kpi">
+            <div class="lab">Mejor mes</div>
+            <div class="val amber">$ 9,210</div>
+            <div class="sub">febrero 2026</div>
+          </div>
+          <div class="modal-kpi">
+            <div class="lab">Peor mes</div>
+            <div class="val">$ 4,890</div>
+            <div class="sub">junio · 12m atrás</div>
+          </div>
+          <div class="modal-kpi">
+            <div class="lab">Crecimiento YoY</div>
+            <div class="val sage">+ 34%</div>
+            <div class="sub">vs 12m anteriores</div>
+          </div>
+          <div class="modal-kpi">
+            <div class="lab">Proyección · jun</div>
+            <div class="val amber">$ 8,900</div>
+            <div class="sub">+5.7% vs mayo</div>
+          </div>
+          <div class="modal-kpi">
+            <div class="lab">Total acumulado</div>
+            <div class="val">$ 82,080</div>
+            <div class="sub">últimos 12 meses</div>
+          </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="modal-break">
+          <div>
+            <h3>Por fuente · mayo</h3>
+            <div class="lab-row">4 fuentes activas · de dónde vino el dinero</div>
+            <div class="src-list-modal">
+              <div class="src-row-modal">
+                <div class="logo amber">YT</div>
+                <div class="info">
+                  <div class="nm">YouTube · AdSense + sponsors</div>
+                  <div class="sb">2 canales</div>
+                  <div class="bar"><i style="width:45%"></i></div>
+                </div>
+                <div class="amt"><div class="v">$ 3,820</div><div class="pct">45% · ▲ 18%</div></div>
+              </div>
+              <div class="src-row-modal">
+                <div class="logo sage">CO</div>
+                <div class="info">
+                  <div class="nm">Consultoría</div>
+                  <div class="sb">cliente A · retainer</div>
+                  <div class="bar"><i style="width:28%"></i></div>
+                </div>
+                <div class="amt"><div class="v">$ 2,400</div><div class="pct" style="color:var(--ink-faint)">28% · estable</div></div>
+              </div>
+              <div class="src-row-modal">
+                <div class="logo cyan">FB</div>
+                <div class="info">
+                  <div class="nm">Facebook in-stream</div>
+                  <div class="sb">página pública</div>
+                  <div class="bar"><i style="width:17%"></i></div>
+                </div>
+                <div class="amt"><div class="v">$ 1,420</div><div class="pct">17% · ▲ 8%</div></div>
+              </div>
+              <div class="src-row-modal">
+                <div class="logo">··</div>
+                <div class="info">
+                  <div class="nm">Otros</div>
+                  <div class="sb">proyectos sueltos · afiliados</div>
+                  <div class="bar"><i style="width:10%"></i></div>
+                </div>
+                <div class="amt"><div class="v">$ 780</div><div class="pct" style="color:var(--warn)">10% · ▼ 6%</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3>Mes a mes</h3>
+            <div class="lab-row">últimos 12 meses · barra proporcional</div>
+            <div class="month-list-modal">
+              <div class="month-row-modal"><span class="m">jun&nbsp;25</span><div class="bar"><i style="width:52%"></i></div><span class="v">$ 5,210</span></div>
+              <div class="month-row-modal"><span class="m">jul</span><div class="bar"><i style="width:55%"></i></div><span class="v">$ 5,520</span></div>
+              <div class="month-row-modal"><span class="m">ago</span><div class="bar"><i style="width:58%"></i></div><span class="v">$ 5,810</span></div>
+              <div class="month-row-modal"><span class="m">sep</span><div class="bar"><i style="width:67%"></i></div><span class="v">$ 6,720</span></div>
+              <div class="month-row-modal"><span class="m">oct</span><div class="bar"><i style="width:96%"></i></div><span class="v">$ 9,610</span></div>
+              <div class="month-row-modal"><span class="m">nov</span><div class="bar"><i style="width:77%"></i></div><span class="v">$ 7,710</span></div>
+              <div class="month-row-modal"><span class="m">dic</span><div class="bar"><i style="width:72%"></i></div><span class="v">$ 7,180</span></div>
+              <div class="month-row-modal"><span class="m">ene</span><div class="bar"><i style="width:78%"></i></div><span class="v">$ 7,820</span></div>
+              <div class="month-row-modal"><span class="m">feb</span><div class="bar"><i style="width:92%"></i></div><span class="v">$ 9,210</span></div>
+              <div class="month-row-modal"><span class="m">mar</span><div class="bar"><i style="width:81%"></i></div><span class="v">$ 8,100</span></div>
+              <div class="month-row-modal"><span class="m">abr</span><div class="bar"><i style="width:75%"></i></div><span class="v">$ 7,492</span></div>
+              <div class="month-row-modal current"><span class="m">may</span><div class="bar"><i style="width:84%"></i></div><span class="v">$ 8,420</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <div>vista expandida · datos locales · sync 09:42</div>
+          <div class="actions-row">
+            <span class="mini-btn">↓ exportar CSV</span>
+            <span class="mini-btn">comparar años</span>
+            <span class="mini-btn primary">abrir Finanzas →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Mobile ==================== -->
+  <section class="stage" data-stage="mobile">
+    <div class="stage-meta">
+      <h2>M · Mobile / PWA</h2>
+      <div class="desc">Tres condensaciones de las versiones anteriores en formato iPhone PWA. Sidebar colapsa a tab bar inferior; KPIs se apilan; accesos quedan como chips. <span class="note">Útil para validar densidad antes de bajar a comps.</span></div>
+    </div>
+
+    <div class="mobile-wrap">
+
+      <!-- Phone 1: stacked KPIs -->
+      <div class="phone">
+        <div class="scr">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div class="mono" style="font-size:9px;color:var(--ink-faint)">Personal OS</div><div class="scribble" style="font-size:22px">Dashboard</div></div>
+            <div class="iconbtn">◐</div>
+          </div>
+
+          <div class="sk kpi tilt-l glow-sage" style="padding:14px">
+            <div class="row1"><div class="tag"><div class="sym in">↑</div><div class="label">Ingresos</div></div></div>
+            <div class="big sage" style="font-size:34px">$ 8,420</div>
+            <div class="delta"><b>+12.4%</b></div>
+          </div>
+          <div class="sk kpi glow-amber" style="padding:14px">
+            <div class="row1"><div class="tag"><div class="sym out">↓</div><div class="label">Gastos</div></div></div>
+            <div class="big amber" style="font-size:34px">$ 3,217</div>
+            <div class="delta"><b>−4.1%</b></div>
+          </div>
+          <div class="sk kpi glow-cyan" style="padding:14px">
+            <div class="row1"><div class="tag"><div class="sym bal">≈</div><div class="label">Balance</div></div></div>
+            <div class="big cyan" style="font-size:34px">+ $ 5,203</div>
+            <div class="delta">runway ~ 7m</div>
+          </div>
+
+          <!-- bottom tab bar -->
+          <div style="margin-top:auto;display:flex;justify-content:space-around;padding-top:10px;border-top:1px dashed var(--line)">
+            <div style="text-align:center"><div class="mono" style="font-size:9px;color:var(--accent)">Home</div></div>
+            <div style="text-align:center"><div class="mono" style="font-size:9px;color:var(--ink-faint)">Fin</div></div>
+            <div style="text-align:center"><div class="mono" style="font-size:9px;color:var(--ink-faint)">Est</div></div>
+            <div style="text-align:center"><div class="mono" style="font-size:9px;color:var(--ink-faint)">YT</div></div>
+            <div style="text-align:center"><div class="mono" style="font-size:9px;color:var(--ink-faint)">AI</div></div>
+          </div>
+        </div>
+        <div class="mono" style="text-align:center;font-size:10px;color:var(--ink-faint);margin-top:10px">M-1 · KPIs apilados</div>
+      </div>
+
+      <!-- Phone 2: hero greeting -->
+      <div class="phone">
+        <div class="scr">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div class="mono" style="font-size:9px;color:var(--ink-faint)">Lun · 18 may</div><div class="scribble" style="font-size:22px">Buenos días</div></div>
+            <div class="avatar" style="width:24px;height:24px"></div>
+          </div>
+
+          <div class="sk" style="padding:14px">
+            <div class="label">foco del día</div>
+            <div class="scribble" style="font-size:20px;margin-top:6px;line-height:1.25">
+              1 tarea alta · balance <b style="color:var(--accent-2)">+ $ 1,118</b> esta semana
+            </div>
+            <div class="pill" style="margin-top:10px"><span class="d"></span>Conciliación abril</div>
+          </div>
+
+          <div class="sk" style="padding:14px">
+            <div class="sect-title"><h3 style="font-size:18px">Resumen</h3><div class="meta">mes</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><div class="label">in</div><div class="scribble" style="font-size:22px;color:var(--accent-3)">$ 8.4k</div></div>
+              <div><div class="label">out</div><div class="scribble" style="font-size:22px;color:var(--accent)">$ 3.2k</div></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="pill" style="color:var(--accent-3)">Finanzas →</div>
+            <div class="pill" style="color:var(--accent-2)">Estudios →</div>
+            <div class="pill" style="color:var(--accent)">YouTube →</div>
+          </div>
+
+          <div style="margin-top:auto;display:flex;justify-content:space-around;padding-top:10px;border-top:1px dashed var(--line)">
+            <div class="mono" style="font-size:9px;color:var(--accent)">Home</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">Fin</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">Est</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">YT</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">AI</div>
+          </div>
+        </div>
+        <div class="mono" style="text-align:center;font-size:10px;color:var(--ink-faint);margin-top:10px">M-2 · Greeting (V5)</div>
+      </div>
+
+      <!-- Phone 3: bento -->
+      <div class="phone">
+        <div class="scr">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="scribble" style="font-size:22px">Today</div>
+            <div class="iconbtn">⌕</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="sk glow-cyan" style="padding:10px;grid-column:span 2">
+              <div class="label">Balance</div>
+              <div class="scribble cyan" style="color:var(--accent-2);font-size:28px">+ $ 5,203</div>
+            </div>
+            <div class="sk glow-sage" style="padding:10px">
+              <div class="label">In</div>
+              <div class="scribble sage" style="color:var(--accent-3);font-size:22px">$ 8.4k</div>
+            </div>
+            <div class="sk glow-amber" style="padding:10px">
+              <div class="label">Out</div>
+              <div class="scribble amber" style="color:var(--accent);font-size:22px">$ 3.2k</div>
+            </div>
+            <div class="sk qa fin" style="padding:10px;min-height:60px"><div class="ic" style="width:24px;height:24px">$</div><div class="ttl" style="font-size:16px;margin-top:4px">Finanzas</div></div>
+            <div class="sk qa est" style="padding:10px;min-height:60px"><div class="ic" style="width:24px;height:24px">𝛼</div><div class="ttl" style="font-size:16px;margin-top:4px">Estudios</div></div>
+          </div>
+
+          <div class="sk" style="padding:10px">
+            <div class="sect-title"><h3 style="font-size:16px">Pendientes</h3><div class="meta">04</div></div>
+            <div class="task" style="padding:6px 0"><div class="check"></div><div class="body"><div class="l1" style="font-size:15px">Conciliación abril</div></div><div class="tag-prio hi">!</div></div>
+            <div class="task" style="padding:6px 0"><div class="check"></div><div class="body"><div class="l1" style="font-size:15px">Lección 4</div></div><div class="meta">vie</div></div>
+          </div>
+
+          <div style="margin-top:auto;display:flex;justify-content:space-around;padding-top:10px;border-top:1px dashed var(--line)">
+            <div class="mono" style="font-size:9px;color:var(--accent)">Home</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">Fin</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">Est</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">YT</div>
+            <div class="mono" style="font-size:9px;color:var(--ink-faint)">AI</div>
+          </div>
+        </div>
+        <div class="mono" style="text-align:center;font-size:10px;color:var(--ink-faint);margin-top:10px">M-3 · Bento (V3)</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- footer notes -->
+  <div style="margin-top:48px;padding-top:18px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;color:var(--ink-faint);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase">
+    <div>wireframe · low fidelity · revisión interna</div>
+    <div>v0.1 · 18 may 2026</div>
+  </div>
+
+</div>
+
+<!-- Tweaks panel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<script>
+  // Income chart expand modal
+  function openIncomeModal(){
+    const m = document.getElementById('incomeModal');
+    if (m){ m.classList.add('open'); document.body.style.overflow='hidden'; }
+  }
+  function closeIncomeModal(){
+    const m = document.getElementById('incomeModal');
+    if (m){ m.classList.remove('open'); document.body.style.overflow=''; }
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeIncomeModal();
+  });
+
+  // Tabs
+  (function(){
+    const tabs = document.querySelectorAll('#tabs .tab');
+    const stages = document.querySelectorAll('.stage');
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      stages.forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      const id = t.dataset.stage;
+      document.querySelector('.stage[data-stage="'+id+'"]').classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }));
+  })();
+</script>
+
+<script type="text/babel">
+  const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "density": "compact",
+    "accent": "amber",
+    "showGlow": true,
+    "showAnnotations": true
+  }/*EDITMODE-END*/;
+
+  function applyTweaks(t){
+    document.body.dataset.density = t.density;
+    const accents = {
+      amber: ["#c79a5c","#6fb7c9","#8db58a"],
+      cyan:  ["#6fb7c9","#c79a5c","#8db58a"],
+      sage:  ["#8db58a","#c79a5c","#6fb7c9"],
+      mono:  ["#cfcfd2","#9a9aa0","#7a7a80"]
+    };
+    const [a,b,c] = accents[t.accent] || accents.amber;
+    document.documentElement.style.setProperty('--accent', a);
+    document.documentElement.style.setProperty('--accent-2', b);
+    document.documentElement.style.setProperty('--accent-3', c);
+    // glow
+    document.documentElement.style.setProperty('--glow', t.showGlow ? '0 0 24px -8px '+a+'8c' : 'none');
+    document.querySelectorAll('.sk.glow-amber,.sk.glow-cyan,.sk.glow-sage').forEach(el => {
+      el.style.boxShadow = t.showGlow ? '' : 'none';
+    });
+    document.querySelectorAll('.doodle, .note').forEach(el => {
+      el.style.display = t.showAnnotations ? '' : 'none';
+    });
+  }
+
+  function App(){
+    const [t, setTweak] = window.useTweaks(TWEAKS_DEFAULTS);
+    React.useEffect(() => { applyTweaks(t); }, [t]);
+
+    const T = window.TweaksPanel;
+    const S = window.TweakSection;
+    const R = window.TweakRadio;
+    const Tg = window.TweakToggle;
+
+    return (
+      <T title="Tweaks">
+        <S title="Densidad">
+          <R value={t.density} onChange={v=>setTweak('density',v)}
+            options={[
+              {value:'compact', label:'Compacto'},
+              {value:'default', label:'Normal'},
+              {value:'loose',   label:'Amplio'},
+            ]}/>
+        </S>
+        <S title="Paleta de acento">
+          <R value={t.accent} onChange={v=>setTweak('accent',v)}
+            options={[
+              {value:'amber', label:'Ámbar'},
+              {value:'cyan',  label:'Cian'},
+              {value:'sage',  label:'Sage'},
+              {value:'mono',  label:'Mono'},
+            ]}/>
+        </S>
+        <S title="Detalles">
+          <Tg label="Glow sutil en tarjetas"  value={t.showGlow}        onChange={v=>setTweak('showGlow',v)}/>
+          <Tg label="Mostrar anotaciones"     value={t.showAnnotations} onChange={v=>setTweak('showAnnotations',v)}/>
+        </S>
+      </T>
+    );
+  }
+
+  const root = document.createElement('div');
+  document.body.appendChild(root);
+  ReactDOM.createRoot(root).render(<App/>);
+</script>
+
+</body>
+</html>
