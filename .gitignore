@@ -3,11 +3,14 @@ node_modules/
 /.pnp
 .pnp.js
 
-# Build output
-dist/
-build/
+# Next.js build output
+.next/
 out/
+build/
+
+# TypeScript
 *.tsbuildinfo
+next-env.d.ts
 
 # Environment files
 .env
@@ -31,11 +34,10 @@ npm-debug.log*
 
 # Cache
 .cache/
-.parcel-cache/
 .eslintcache
 
 # Testing
 coverage/
 
-# Miscellaneous
-*.local
+# Vercel
+.vercel

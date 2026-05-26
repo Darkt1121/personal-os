@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 28% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 28% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 28% 9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 28% 7%;
+    --secondary: 222 28% 13%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 28% 13%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 222 28% 15%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 28% 14%;
+    --input: 222 28% 14%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+
+    /* Module accent colors */
+    --finance-hue: 158 64% 52%;
+    --study-hue: 199 89% 48%;
+    --youtube-hue: 4 86% 63%;
+    --ai-hue: 258 90% 66%;
+    --learning-hue: 82 78% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+}
