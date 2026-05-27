@@ -1,18 +1,25 @@
 'use client'
 import { useState, useTransition } from 'react'
-import { X, Minus } from 'lucide-react'
-import { createExpenseEntry } from '../actions'
+import { X, Minus, Pencil } from 'lucide-react'
+import { createExpenseEntry, updateExpenseEntry } from '../actions'
+import type { ExpenseRaw } from '../types'
 
-type Props = { open: boolean; onClose: () => void }
+type Props = {
+  open: boolean
+  onClose: () => void
+  editId?: string
+  editData?: ExpenseRaw
+}
 
 const CATEGORIES = [
   'Suscripciones AI', 'Producción', 'Servicios', 'Comida',
   'Transporte', 'Vivienda', 'Educación', 'Salud', 'Entretenimiento', 'Otros',
 ]
 
-export function AddExpenseModal({ open, onClose }: Props) {
+export function AddExpenseModal({ open, onClose, editId, editData }: Props) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const isEdit = !!editId && !!editData
 
   if (!open) return null
 
@@ -21,7 +28,9 @@ export function AddExpenseModal({ open, onClose }: Props) {
     setError(null)
     const formData = new FormData(e.currentTarget)
     startTransition(async () => {
-      const result = await createExpenseEntry(formData)
+      const result = isEdit
+        ? await updateExpenseEntry(editId!, formData)
+        : await createExpenseEntry(formData)
       if (result?.error) {
         setError(result.error)
       } else {
@@ -37,11 +46,15 @@ export function AddExpenseModal({ open, onClose }: Props) {
         <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border icobox-warn">
-              <Minus className="h-3.5 w-3.5" />
+              {isEdit ? <Pencil className="h-3.5 w-3.5" /> : <Minus className="h-3.5 w-3.5" />}
             </div>
             <div>
-              <p className="text-[13.5px] font-semibold text-foreground/90">Nuevo gasto</p>
-              <p className="font-mono text-[9.5px] uppercase tracking-[.14em] text-muted-foreground/40">registrar egreso</p>
+              <p className="text-[13.5px] font-semibold text-foreground/90">
+                {isEdit ? 'Editar gasto' : 'Nuevo gasto'}
+              </p>
+              <p className="font-mono text-[9.5px] uppercase tracking-[.14em] text-muted-foreground/40">
+                {isEdit ? 'modificar registro' : 'registrar egreso'}
+              </p>
             </div>
           </div>
           <button
@@ -61,7 +74,7 @@ export function AddExpenseModal({ open, onClose }: Props) {
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <Field label="Categoría *">
-            <select name="category" required className={inputCls}>
+            <select name="category" required defaultValue={editData?.category ?? ''} className={inputCls}>
               <option value="">— seleccionar —</option>
               {CATEGORIES.map(c => (
                 <option key={c} value={c}>{c}</option>
@@ -69,14 +82,27 @@ export function AddExpenseModal({ open, onClose }: Props) {
             </select>
           </Field>
           <Field label="Descripción">
-            <input name="description" placeholder="qué fue este gasto" className={inputCls} />
+            <input
+              name="description"
+              defaultValue={editData?.description ?? ''}
+              placeholder="qué fue este gasto"
+              className={inputCls}
+            />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Monto *">
-              <input name="amount" type="number" step="0.01" min="0.01" required placeholder="0.00" className={inputCls} />
+              <input
+                name="amount"
+                type="text"
+                inputMode="decimal"
+                required
+                defaultValue={editData?.amount ?? ''}
+                placeholder="166.835 ó 166835"
+                className={inputCls}
+              />
             </Field>
             <Field label="Moneda *">
-              <select name="currency_code" defaultValue="CLP" className={inputCls}>
+              <select name="currency_code" defaultValue={editData?.currency_code ?? 'CLP'} className={inputCls}>
                 <option value="CLP">CLP</option>
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
@@ -89,7 +115,7 @@ export function AddExpenseModal({ open, onClose }: Props) {
               name="expense_date"
               type="date"
               required
-              defaultValue={new Date().toISOString().slice(0, 10)}
+              defaultValue={editData?.expense_date ?? new Date().toISOString().slice(0, 10)}
               className={inputCls}
             />
           </Field>
@@ -108,7 +134,7 @@ export function AddExpenseModal({ open, onClose }: Props) {
               className="flex-1 rounded-lg border border-amber-500/35 px-4 py-2 font-mono text-[11.5px] font-medium transition-all disabled:opacity-50"
               style={{ color: '#c79a5c', background: 'linear-gradient(180deg, rgba(199,154,92,.14), rgba(199,154,92,.05))', boxShadow: '0 0 22px -10px rgba(199,154,92,.45)' }}
             >
-              {isPending ? 'guardando…' : 'guardar gasto'}
+              {isPending ? 'guardando…' : isEdit ? 'actualizar gasto' : 'guardar gasto'}
             </button>
           </div>
         </form>

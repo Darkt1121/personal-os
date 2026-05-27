@@ -1,8 +1,11 @@
 'use client'
-import { useState, useMemo } from 'react'
-import { Search, Check } from 'lucide-react'
-import type { Movement } from '../types'
+import { useState, useMemo, useTransition } from 'react'
+import { Search, Check, Pencil, Trash2 } from 'lucide-react'
+import type { Movement, IncomeRaw, ExpenseRaw } from '../types'
 import { cn } from '@/lib/utils/cn'
+import { deleteIncomeEntry, deleteExpenseEntry } from '../actions'
+import { AddIncomeModal } from './AddIncomeModal'
+import { AddExpenseModal } from './AddExpenseModal'
 
 function fmt(n: number) {
   return '$ ' + n.toLocaleString('en-US', { maximumFractionDigits: 0 })
@@ -25,6 +28,9 @@ export function MovimientosTable({ movements }: { movements: Movement[] }) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [rangeFilter, setRangeFilter] = useState<RangeFilter>('30d')
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [isDeleting, startDeleteTransition] = useTransition()
+  const [editMovement, setEditMovement] = useState<Movement | null>(null)
 
   const rangeCutoff = rangeFilter === '7d' ? daysAgo(7) : rangeFilter === '30d' ? daysAgo(30) : daysAgo(90)
 
@@ -44,8 +50,33 @@ export function MovimientosTable({ movements }: { movements: Movement[] }) {
     return { inSum, outSum, net: inSum - outSum }
   }, [filtered])
 
+  function handleDelete(m: Movement) {
+    startDeleteTransition(async () => {
+      const action = m.type === 'in' ? deleteIncomeEntry : deleteExpenseEntry
+      await action(m.id)
+      setConfirmDeleteId(null)
+    })
+  }
+
+  const editIncome = editMovement?.type === 'in' ? editMovement : null
+  const editExpense = editMovement?.type === 'out' ? editMovement : null
+
   return (
     <div>
+      {/* Edit modals */}
+      <AddIncomeModal
+        open={!!editIncome}
+        onClose={() => setEditMovement(null)}
+        editId={editIncome?.id}
+        editData={editIncome?.raw as IncomeRaw | undefined}
+      />
+      <AddExpenseModal
+        open={!!editExpense}
+        onClose={() => setEditMovement(null)}
+        editId={editExpense?.id}
+        editData={editExpense?.raw as ExpenseRaw | undefined}
+      />
+
       {/* Toolbar */}
       <div className="flex items-center gap-3 px-5 py-4 pb-3">
         <div className="flex flex-1 items-center gap-2.5 rounded-[10px] border border-border/50 bg-background/50 px-3.5 py-2.5">
@@ -107,16 +138,16 @@ export function MovimientosTable({ movements }: { movements: Movement[] }) {
         <table className="w-full border-collapse" style={{ fontVariantNumeric: 'tabular-nums' }}>
           <thead>
             <tr>
-              {['Fecha', 'Concepto', 'Categoría', 'Fuente', 'Estado', 'Monto'].map((h, i) => (
+              {['Fecha', 'Concepto', 'Categoría', 'Fuente', 'Estado', 'Monto', ''].map((h, i) => (
                 <th
-                  key={h}
+                  key={i}
                   className="border-b py-3.5 font-mono text-[9.5px] uppercase tracking-[.22em] text-muted-foreground/30 font-medium"
                   style={{
                     borderColor: 'rgba(255,255,255,.06)',
                     textAlign: i === 5 ? 'right' : 'left',
                     paddingLeft: i === 0 ? '20px' : '14px',
-                    paddingRight: i === 5 ? '20px' : '14px',
-                    width: i === 0 ? '90px' : i === 5 ? '170px' : undefined,
+                    paddingRight: i === 6 ? '16px' : i === 5 ? '20px' : '14px',
+                    width: i === 0 ? '90px' : i === 5 ? '170px' : i === 6 ? '80px' : undefined,
                   }}
                 >
                   {h}
@@ -127,7 +158,7 @@ export function MovimientosTable({ movements }: { movements: Movement[] }) {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-14 text-center font-mono text-[11px] text-muted-foreground/30">
+                <td colSpan={7} className="py-14 text-center font-mono text-[11px] text-muted-foreground/30">
                   {movements.length === 0 ? 'sin movimientos registrados' : 'no hay resultados para esta búsqueda'}
                 </td>
               </tr>
@@ -201,6 +232,44 @@ export function MovimientosTable({ movements }: { movements: Movement[] }) {
                     <span style={{ opacity: .55, fontWeight: 400 }}>{m.type === 'in' ? '+' : '−'}</span>
                     {fmt(m.amount)}
                     <span className="ml-1 font-mono text-[10px] font-normal text-muted-foreground/35">{m.currency}</span>
+                  </td>
+
+                  {/* Actions */}
+                  <td className="border-b px-2 py-4 align-middle" style={{ borderColor: 'rgba(255,255,255,.025)', width: '80px' }}>
+                    {confirmDeleteId === m.id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleDelete(m)}
+                          disabled={isDeleting}
+                          className="rounded px-1.5 py-1 font-mono text-[10px] text-rose-400 transition-colors hover:bg-rose-500/10 disabled:opacity-50"
+                        >
+                          {isDeleting ? '…' : 'sí'}
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(null)}
+                          className="rounded px-1.5 py-1 font-mono text-[10px] text-muted-foreground/40 transition-colors hover:text-foreground/60"
+                        >
+                          no
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <button
+                          onClick={() => setEditMovement(m)}
+                          title="Editar"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-border/40 text-muted-foreground/35 transition-all hover:border-emerald-500/30 hover:text-emerald-400"
+                        >
+                          <Pencil className="h-[11px] w-[11px]" />
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(m.id)}
+                          title="Eliminar"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-border/40 text-muted-foreground/35 transition-all hover:border-rose-500/30 hover:text-rose-400"
+                        >
+                          <Trash2 className="h-[11px] w-[11px]" />
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))

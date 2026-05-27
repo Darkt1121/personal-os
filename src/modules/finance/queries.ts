@@ -1,7 +1,7 @@
 import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database'
-import type { FinanceKPIs, MonthlyPoint, Movement, CategoryTotal, SourceTotal } from './types'
+import type { FinanceKPIs, MonthlyPoint, Movement, CategoryTotal, SourceTotal, MovementRaw } from './types'
 
 type IncomeRow = Database['public']['Tables']['income_entries']['Row']
 type ExpenseRow = Database['public']['Tables']['expense_entries']['Row']
@@ -105,6 +105,18 @@ export async function getFinancePageData() {
   // Combined movements sorted by date desc
   const movements: Movement[] = []
   recentIncome.forEach(r => {
+    const raw: MovementRaw = {
+      type: 'in',
+      source: r.source,
+      channel_name: r.channel_name ?? null,
+      amount_original: Number(r.amount_original),
+      currency_original: r.currency_original ?? 'USD',
+      amount_clp: r.amount_clp != null ? Number(r.amount_clp) : null,
+      payment_date: r.payment_date,
+      status: r.status ?? 'received',
+      method: r.method ?? null,
+      notes: r.notes ?? null,
+    }
     movements.push({
       id: r.id,
       date: r.payment_date,
@@ -116,9 +128,18 @@ export async function getFinancePageData() {
       amount: Number(r.amount_clp ?? r.amount_original),
       currency: 'CLP',
       type: 'in',
+      raw,
     })
   })
   recentExpenses.forEach(r => {
+    const raw: MovementRaw = {
+      type: 'out',
+      category: r.category ?? 'Sin categoría',
+      amount: Number(r.amount),
+      currency_code: r.currency_code ?? 'CLP',
+      expense_date: r.expense_date,
+      description: r.description ?? null,
+    }
     movements.push({
       id: r.id,
       date: r.expense_date,
@@ -130,6 +151,7 @@ export async function getFinancePageData() {
       amount: Number(r.amount),
       currency: r.currency_code ?? 'CLP',
       type: 'out',
+      raw,
     })
   })
   movements.sort((a, b) => b.date.localeCompare(a.date))

@@ -16,6 +16,28 @@ export type MonthlyPoint = {
   gastos: number
 }
 
+export type IncomeRaw = {
+  source: string
+  channel_name: string | null
+  amount_original: number
+  currency_original: string
+  amount_clp: number | null
+  payment_date: string
+  status: string
+  method: string | null
+  notes: string | null
+}
+
+export type ExpenseRaw = {
+  category: string
+  amount: number
+  currency_code: string
+  expense_date: string
+  description: string | null
+}
+
+export type MovementRaw = ({ type: 'in' } & IncomeRaw) | ({ type: 'out' } & ExpenseRaw)
+
 export type Movement = {
   id: string
   date: string
@@ -27,6 +49,7 @@ export type Movement = {
   amount: number
   currency: string
   type: 'in' | 'out'
+  raw: MovementRaw
 }
 
 export type CategoryTotal = {
