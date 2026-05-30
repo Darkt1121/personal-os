@@ -175,6 +175,120 @@ export interface Database {
           created_at?: string
         }
       }
+      youtube_ideas: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          tag: string | null
+          channel: string
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          tag?: string | null
+          channel?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          tag?: string | null
+          channel?: string
+          notes?: string | null
+          created_at?: string
+        }
+      }
+      youtube_scripts: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          type: string
+          channel: string
+          status: string
+          progress: number
+          content: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          type?: string
+          channel?: string
+          status?: string
+          progress?: number
+          content?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          type?: string
+          channel?: string
+          status?: string
+          progress?: number
+          content?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      youtube_videos: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          channel: string
+          published_date: string | null
+          scheduled_date: string | null
+          duration: string | null
+          views: number
+          avg_watch_time: string | null
+          ctr: number
+          retention: number
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          channel?: string
+          published_date?: string | null
+          scheduled_date?: string | null
+          duration?: string | null
+          views?: number
+          avg_watch_time?: string | null
+          ctr?: number
+          retention?: number
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          channel?: string
+          published_date?: string | null
+          scheduled_date?: string | null
+          duration?: string | null
+          views?: number
+          avg_watch_time?: string | null
+          ctr?: number
+          retention?: number
+          status?: string
+          created_at?: string
+        }
+      }
       activity_items: {
         Row: {
           id: string

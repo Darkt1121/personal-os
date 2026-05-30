@@ -1,25 +1,36 @@
-import { Youtube } from 'lucide-react'
+import { getYoutubePageData } from '@/modules/youtube/queries'
+import { YouTubeHero } from '@/modules/youtube/components/YouTubeHero'
+import { PipelineStrip } from '@/modules/youtube/components/PipelineStrip'
+import { YouTubeContent } from '@/modules/youtube/components/YouTubeContent'
+import { MesEnRevision } from '@/modules/youtube/components/MesEnRevision'
 
 export const metadata = { title: 'YouTube — Personal OS' }
 
-export default function YoutubePage() {
-  return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-500/10 via-card to-card p-6 shadow-lg shadow-rose-500/5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/15 border border-rose-500/25">
-            <Youtube className="h-5 w-5 text-rose-400" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-foreground">YouTube</h1>
-            <p className="text-sm text-muted-foreground">Guiones, ideas y análisis</p>
-          </div>
-        </div>
-      </div>
+export default async function YoutubePage() {
+  const data = await getYoutubePageData()
 
-      <div className="rounded-xl border border-border bg-card p-8 text-center">
-        <p className="text-muted-foreground text-sm">Módulo en construcción</p>
-      </div>
+  const scriptsDraftCount = data.scripts.filter(s => s.status === 'borrador' || s.status === 'idea').length
+  const productionCount = data.scripts.filter(s => s.status === 'revision' || s.status === 'aprobado').length
+  const currentScript = data.scripts[0]?.title ?? null
+
+  return (
+    <div className="flex flex-col gap-4 p-6">
+      <YouTubeHero
+        ideasCount={data.ideas.length}
+        scriptsDraftCount={scriptsDraftCount}
+        productionCount={productionCount}
+        currentScript={currentScript}
+      />
+
+      <PipelineStrip pipeline={data.pipeline} />
+
+      <YouTubeContent ideas={data.ideas} scripts={data.scripts} />
+
+      <MesEnRevision
+        lastVideo={data.lastVideo}
+        monthlyVideos={data.monthlyVideos}
+        nextScheduled={data.nextScheduled}
+      />
     </div>
   )
 }
